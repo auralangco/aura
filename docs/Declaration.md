@@ -13,11 +13,9 @@ decl (var|final|static)? <ident>(: <type>)? (= | := | => ) <expr>;
 - `final`: the declaration can't be redeclared
 - `static`: the declaration data is known during compile time
 - `<ident>`: the name that's being declared. The name must follow a pattern to indicate what is being declared.
-
-    - *value*: `snake_case` is used, unless it's `final`, then `SCREAMING_SNAKE_CASE` should be used.
-    - *type*: `PascalCase` is used
-    - *tag*: `#kebab-case` is used
-
+  - *value*: `snake_case` is used, unless it's `final`, then `SCREAMING_SNAKE_CASE` should be used.
+  - *type*: `PascalCase` is used
+  - *tag*: `#kebab-case` is used
 - `<type>`: Specifies the type of the value being declared. Only used for values declarations, and can be ommited
 - `=`: copy assign operator copies the expression assigning it to the declared name;
 - `:=`: deep copy assign operator deep copies the expression, so any internal references are also copied. Only used for values declarations
