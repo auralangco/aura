@@ -1,0 +1,3 @@
+decl static println = link "std"!::println;
+
+main = println("Hello world");

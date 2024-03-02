@@ -1,0 +1,32 @@
+decl static Category = enum {
+    SUV,
+    Hatch,
+    Sedan,
+    Sport
+};
+
+decl static Car = cons object {
+    name: String, 
+    value: Int, 
+    read category: Category
+} impl {
+    new = (name: String, value: Int, category: Category) -> Self {
+        // Casts a compound into a Car
+        Self <$ (name, value, category)
+    };
+
+    adulterate = @self (value: Int) self.value = value;
+
+    is_suv = &self void -> Bool {
+        match self.category {
+            Category::SUV ~> true,
+            _ ~> false
+        }
+    }
+} impl #eq<Self> {
+    eq = &self (other: &Self) -> bool {
+        self.name == other.name 
+        && self.value == other.value
+        && self.category == other.category
+    }
+}

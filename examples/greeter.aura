@@ -1,0 +1,18 @@
+// The main function may crashes
+main = ! {
+    decl name: String = {
+        println("What is your name? ");
+        // Read a line from the stdin and crashes if an error happens
+        readln()!;
+    };
+
+    decl age: Int = {
+        println("How old are you? ");
+        // Reads a line, crashes if on error and assigns it to `age`
+        decl age: String = readln()!;
+        // Parses the string to an Int and crashes if not parseable
+        age:parse<Int>()!;
+    };
+
+    println(`Hello, ${name}! You're ${age} years old, right?`);
+}
