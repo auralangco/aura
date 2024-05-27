@@ -1,7 +1,29 @@
 # Aura
 
-Aura is a programming language for application development.
-Aura tries to bring functional programming and OOP features together to create high-level applications.
+Aura is a functional parallelizable multitarget programming language. It means it's meant to be functional first, be easy to run in multicore and in multiple platforms by transpiling to other languages.
 
-Aura also uses lazyzess and multi-threading to improve performance of applications. Every value in Aura is lazily copied, it means, just the necessary parts are actually copied when modified. Also, pure and independent code execution is delegated to parallel threads.
+## Features
 
+### Immutability
+
+There are no variables in Aura, you may give aliases to values, and that's it.
+
+### Lazyness
+
+Computations are not done until it's absolutely required. This may increase memory usage, but gives Aura superpowers.
+
+### Functional
+
+Aura implements several functional programming features such as:
+
+- Functions as values
+- Purity and side-effect management
+- Pattern matching
+
+### Type Safe
+
+Aura uses a dynamic type system that ensures operations validity is checked during compile time
+
+### Static vs Dynamic*
+
+Aura atempts to make several compile time operations available in runtime while enforcing proper compile time treatment

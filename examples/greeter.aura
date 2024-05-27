@@ -1,18 +1,20 @@
+use aura/io
+
 // The main function may crashes
-main = ! {
-    decl name: String = {
-        println("What is your name? ");
+main act -> !Void {
+    let name = {
+        (io/println "What is your name? ");
         // Read a line from the stdin and crashes if an error happens
-        readln()!;
-    };
+        !(io/readln)
+    }
 
-    decl age: Int = {
-        println("How old are you? ");
+    let age = {
+        (io/println "How old are you? ")
         // Reads a line, crashes if on error and assigns it to `age`
-        decl age: String = readln()!;
+        let age !(io/readln)
         // Parses the string to an Int and crashes if not parseable
-        age:parse<Int>()!;
-    };
+        !(age:parse Int)
+    }
 
-    println(`Hello, ${name}! You're ${age} years old, right?`);
+    (io/println `Hello, ${name}! You're ${age} years old, right?`)
 }

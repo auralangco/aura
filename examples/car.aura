@@ -1,32 +1,22 @@
-decl static Category = union {
-    SUV,
-    Hatch,
-    Sedan,
-    Sport
-};
+type Category enum (:suv :hatch :sedan :sport)
 
-decl static Car = cons object {
-    name: String, 
-    value: Int, 
-    read category: Category
-} impl {
-    new = (name: String, value: Int, category: Category) -> Self {
-        // Casts a compound into a Car
-        Self <$ (name, value, category)
-    };
-
-    adulterate = @self (value: Int) self.value = value;
-
-    is_suv = &self void -> Bool {
-        match self.category {
-            Category::SUV ~> true,
-            _ ~> false
-        }
+type Car obj (
+    String .name 
+    Int .value 
+    Category .category
+) impl (
+    ::new (String name Int value Category category) -> Self obj (name value category)
+    
+    :adulterate (Int value) -> Self obj (self.name value self.category)
+    
+    :is_suv () -> Bool match self {
+        Category:suv => true
+        _ => false
     }
-} impl #eq<Self> {
-    eq = &self (other: &Self) -> bool {
-        self.name == other.name 
-        && self.value == other.value
-        && self.category == other.category
-    }
-}
+) impl #eq<Self Self> (
+    :eq (Self other) -> Bool :(
+        self.name == other.name &&
+        self.value == other.value &&
+        self.category == other.category
+    )
+)
