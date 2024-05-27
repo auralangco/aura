@@ -1,0 +1,13 @@
+Args = object {
+    filename: String,
+    output: ?String,
+    age: Int
+};
+
+main = (args: Args) -> {
+    println(`The filename is ${args.filename}, ${
+        when (args.output) 
+            null => "no output file",
+            output => `the output file is ${output}` 
+    }, ${args.age} years old.`);
+}

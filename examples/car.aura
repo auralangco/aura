@@ -1,4 +1,4 @@
-decl static Category = enum {
+decl static Category = union {
     SUV,
     Hatch,
     Sedan,

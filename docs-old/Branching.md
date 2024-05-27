@@ -101,7 +101,7 @@ test "Simple While" {
     while iter < 10 => {
         println(`It's the iteration ${iter}`);
         iter += 1;
-        next
+        next;
     }
 }
 

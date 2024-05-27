@@ -35,16 +35,16 @@ decl static run: Act<(), ()> = act () -> () {
 
 ## Closures
 
-Closures are functions that can capture variables in the scope where they've been created (so they aren't always pure) and they use a much shorter notation.
+Closures are functions that can capture variables in the scope where they've been created (so they aren't always pure) and they use a much shorter notation. If a closure is pure, you may prepend it with the `pure` keyword so its type will be `I -> O` rather than the default `act I -> O`.
 
 They are most times used as arguments to functions, so most part of the notation can be infered.
 
-```
+```ts
 args >-> expr
 ```
 
 Where args is a named compound (types can be ommited) and the return type is infered from the expr
 
-```
+```ts
 my_array:filter x >-> (x > 9 && x % 2 == 0)
 ```
