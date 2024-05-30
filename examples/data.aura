@@ -1,0 +1,11 @@
+link {println} = aura/io
+
+type Number = (Int :int | Float :float)
+
+main = act {
+    n = Number:int(10);
+
+    match n as
+        :int(i) => println(`Integer ${i}`),
+        :float(f) => println(`Float ${f}`);
+}
