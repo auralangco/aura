@@ -1,6 +1,6 @@
 link {println} = aura/io
 
-type Number = (Int :int | Float :float)
+type Number = (:int Int | :float Float)
 
 main = act {
     n = Number:int(10);
