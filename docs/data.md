@@ -146,7 +146,13 @@ Wraps the result of `act` functions to encapsulate side effects
 
 ### `Async(T)`
 
-Wraps the result of `async` functions to encapsulate assyncronous execution
+Produces a handler to deal with potentially long running calls
+
+```
+handle Async(String) = Async::new(fn () -> udp::recv("0.0.0.0:4000"));
+// Do your stuff
+res Result(String) = Async::await(handle);
+```
 
 ## Functional Types
 
@@ -158,7 +164,6 @@ Closures are a way to write functions as values, non-pure functions may capture 
 fn (args...) -> expr
 pure (args...) -> expr
 act (args...) -> expr
-async (args...) -> expr
 ```
 
 ### Functions
@@ -183,12 +188,4 @@ Functions that do produce side-effects (most likely IO operations)
 
 ```
 act (arg1 T, arg2 U) -> V
-```
-
-### Async
-
-Functions that can take potentially a long time to execute and do produce side-effects (most likely network operations)
-
-```
-async (arg1 T, arg2 U, arg3 V) -> W 
 ```
