@@ -8,10 +8,6 @@ Aura is a functional parallelizable multitarget programming language. It means i
 
 There are no variables in Aura, you may give aliases to values, and that's it.
 
-### Lazyness
-
-Computations are not done until it's absolutely required. This may increase memory usage, but gives Aura superpowers.
-
 ### Functional
 
 Aura implements several functional programming features such as:
@@ -22,8 +18,8 @@ Aura implements several functional programming features such as:
 
 ### Type Safe
 
-Aura uses a dynamic type system that ensures operations validity is checked during compile time
+Aura uses a type system that ensures operations validity is checked during compile time
 
-### Static vs Dynamic*
+### Static vs Dynamic
 
 Aura atempts to make several compile time operations available in runtime while enforcing proper compile time treatment
