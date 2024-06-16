@@ -55,3 +55,5 @@ Data can be bound to a name in lots of situations
 ### Local Scopes
 
 The `=` operator binds data to a name in local scopes (function bodies). This kind of binding can be redefined (only if the name doesn't conflict with a globally bound one).
+
+Can be also used for bind destructure using the same patterns defined in [branching](./types/branching.md#patterns)
