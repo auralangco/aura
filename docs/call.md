@@ -45,17 +45,17 @@ Int:mult(Int:add, Int:add); // (lhs (lhs Int, rhs Int), rhs (lhs Int, rhs Int)) 
 If the last arguments of a call are functional values, they can be passed outside the parenthesis with their identfier.
 
 ```rs
-// func _if(cond Bool, then () -> $T, else () -> $T) -> $T
+// fn_if(cond Bool, then () -> $T, else () -> $T) -> $T
 _if(true) then { 10 } else { 0 }; 
 
-// func _for(col #iterable($T), do ($T) -> Void) -> Void
+// fn_for(col #iterable($T), do ($T) -> Void) -> Void
 _for(0..10) do (it Int) -> { IO::println("${it}"); };
 ```
 
 Or if the arguments are branching values
 
 ```rs
-// func _while(init $T, do $T => Flow($T), else () -> Void)
+// fn_while(init $T, do $T => Flow($T), else () -> Void)
 
 _while(10) do {
     it : it > 1 && Int:is_odd(it) => {

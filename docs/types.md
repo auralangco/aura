@@ -116,28 +116,28 @@ Similar to struct but the fields are named after natural number literals
 
 ## Monads: computations wrapped by types
 
-### `Nullable(T)`
+### `Nullable(T)` or `?T`
 
 Brings null-safety to Aura
 
-- `:some T`: a non-null value
+- `:some(T)`: a non-null value
 - `:null`: represents an empty value
 
-### `Failable(T)`
+### `Failable(T)` or `!T`
 
 Makes failures recoverable
 
-- `:succ T`: the value that represents success
-- `:fail #failure`: the value that represents a failure (a `#failure`)
+- `:succ(T)`: the value that represents success
+- `:fail(#failure)`: the value that represents a failure (a `#failure`)
 
-### `Async(T)`
+### `Async(T)` or `...T`
 
 Produces a handler to deal with potentially long running calls
 
 ```txt
-handle Async(String) = Async::new(fn () -> udp.recv("0.0.0.0:4000"));
+handle Async(String) = Async:new(fn () -> udp::recv("0.0.0.0:4000"));
 // Do your stuff
-res Result(String) = Async::await(handle);
+res Result(String) = Async:await(handle);
 ```
 
 ## Functional Types
@@ -147,7 +147,7 @@ res Result(String) = Async::await(handle);
 Closures are a way to write functions as values, non-pure functions may capture their environment
 
 ```txt
-fn (args...) -> expr
+(args...) -> expr
 pure (args...) -> expr
 ```
 
@@ -156,7 +156,7 @@ pure (args...) -> expr
 Functional types receives an input and produces an output
 
 ```txt
-fn (arg1 T, arg2 U) -> V
+(arg1 T, arg2 U) -> V
 ```
 
 ### Pure Functions

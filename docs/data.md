@@ -50,10 +50,10 @@ Data can be bound to a name in lots of situations
 
 ### Global Scopes
 
-`link`, `use`, `val`, `func`, `type`, `tag`, `main` bind some data to a name in the global scope as static data (known at compile time) that can't be redefined.
+`link`, `use`, `val`, `fn`, `type`, `tag`, `main` bind some data to a name in the global scope as static data (known at compile time) that can't be redefined.
 
 ### Local Scopes
 
 The `=` operator binds data to a name in local scopes (function bodies). This kind of binding can be redefined (only if the name doesn't conflict with a globally bound one).
 
-Can be also used for bind destructure using the same patterns defined in [branching](./types/branching.md#patterns)
+Can be also used for bind destructure using the same patterns defined in [branching](./types/branching.md#patterns). But be careful, because if the match fails a panic is going to happen
