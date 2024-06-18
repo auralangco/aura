@@ -65,7 +65,7 @@ Represents non-data
 Each variant is named after an Atom and may have associated data
 
 ```txt
-( :variant-1 T, :variant-2 U, :variant-3 V )
+enum ( :variant1 T, :variant2 U, :variant3 V )
 ```
 
 A `match` can be used to safely handle each variant
@@ -73,15 +73,16 @@ A `match` can be used to safely handle each variant
 ```txt
 link (println) = aura/io
 
-type Foo = (:foo Int, :bar Bool, :foobar)
+type Foo = enum (:foo Int, :bar Bool, :foobar)
 
 fn foo {
-    f = Foo:bar(:false);
+    f = Foo:bar(false);
 
-    str = match f with
+    str = match (f) {
         :foo f => f $> #printable,
         :bar b => b $> #printable,
         :foobar => "null" $> #printable;
+    }
     
     println(str);
 }
@@ -92,15 +93,15 @@ fn foo {
 Each field is named after an Atom and must have a type
 
 ```txt
-( field_1 T, field_2 U, field_3 V )
+struct ( field_1 T, field_2 U, field_3 V )
 ```
 
 Each field can be accessed by the `.` operator
 
 ```txt
-type Foo = (foo Int, bar Bool)
+type Foo = struct (foo Int, bar Bool)
 
-pure Foo.invert(foo Foo) -> Foo = (-foo.foo, !foo.bar)
+pure Foo:invert(foo Foo) -> Foo = (-foo.foo, !foo.bar)
 
 ```
 
