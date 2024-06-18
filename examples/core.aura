@@ -1,0 +1,39 @@
+link (loop) = "aura/core.h"
+
+fn match(value $T, do $T => $U) -> $U = do := value;
+
+fn cases(do Bool => $T) -> $T = match(:true, do);
+
+fn if(cond Bool, then () -> $T, else () -> $T) -> $T = match (cond) {
+    :true => then(),
+    :false => else()
+};
+
+fn for(iter #iterable($T), do ($T) -> Flow(Void, $U)) -> ?$U = match (iter:current()) {
+    :some(value) => loop (value) {
+        value |> do |> Flow:map_next((_) -> iter:next())
+    },
+    :null => :null
+} 
+
+fn while(init $I, do $I -> Bool => Flow($I, $O), else () -> $O) -> $O {
+    fails = !(do !:= init);
+    
+    match (fails) {
+        :true => else()
+        :false => loop (init) { do := it } 
+    }
+}
+
+test "Cases" {
+    x = 5;
+    y = 6;
+
+    z = cases {
+        : x > y => x * y,
+        : x < y => x + y,
+        else => 0 
+    };
+
+    assert(5 == 6);
+}
