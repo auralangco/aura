@@ -1,4 +1,4 @@
-link (loop) = "aura/core.h"
+extern fn loop(init $T, do ($T) -> Flow($T, $U)) -> $U
 
 fn match(value $T, do $T => $U) -> $U = do := value;
 
