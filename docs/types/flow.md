@@ -21,3 +21,10 @@ Also there is the `!:=` operator that checks if the branches **do not match** th
 The loop built-in expects a initial value `$T`, a function `($T) -> Flow($T, $U)` and returns `$U`. It will feed the function with the initial, if the function returns `:next(n)`, `n` is feed to the function and then it's run again. Otherwise, `:break(b)` breaks the loop, returning `b`.
 
 ## If / Cases
+
+`if` is a function that receives a condition, a callback if the condition succeeds and another if it fails. If you need more cases, then use `cases`.
+
+```rs
+fn if(cond Bool, then () -> $T, else () -> $T) -> $T
+fn cases(do Bool => $T) -> $T
+``` 
