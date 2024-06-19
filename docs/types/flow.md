@@ -26,5 +26,5 @@ The loop built-in expects a initial value `$T`, a function `($T) -> Flow($T, $U)
 
 ```rs
 fn if(cond Bool, then () -> $T, else () -> $T) -> $T
-fn cases(do Bool => $T) -> $T
+fn cases(do Void => $T) -> $T
 ``` 

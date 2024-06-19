@@ -2,7 +2,7 @@ extern fn loop(init $T, do ($T) -> Flow($T, $U)) -> $U
 
 fn match(value $T, do $T => $U) -> $U = do := value;
 
-fn cases(do Bool => $T) -> $T = match(:true, do);
+fn cases(do Void => $T) -> $T = match(:null, do);
 
 fn if(cond Bool, then () -> $T, else () -> $T) -> $T = match (cond) {
     :true => then(),
