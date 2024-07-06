@@ -66,6 +66,8 @@ alias fail Result.fail
 alias null Void.null
 alias some Nullable.some
 alias none Nullable.none
+alias next Control.next
+alias break Control.break
 alias map #functor:map
 alias each #iter:each
 alias truthy #truthy:truthy
