@@ -193,7 +193,7 @@ type Number = i Int | f Float {
 }
 ```
 
-Notice the `self` and `Self` keywords. `Self` means the current type (with the same generic parameters). While `self` is short for `self Self` it means the first parameter is of the `Self` type.
+Notice the `self` and `Self` keywords. `Self` means the current type (with the same generic parameters). While `self` is short for `self Self` it means the first parameter is of the `Self` type (`self` can only be used as the first parameter).
 
 Associated functions can be defined outside the type definition by prefixing the function name with the type it's associated to.
 
@@ -215,7 +215,15 @@ type Number = Int {
 }
 ```
 
-It can be called as `Type:AssocType` outside the definition scope
+It can be called as `Type:AssocType` outside the definition scope.
+
+As with associated functions, it can also be defined outside the definition scope
+
+```rs
+type Integer = Int
+
+type Integer:Larger = I64
+```
 
 ### Associated Values
 
@@ -227,7 +235,13 @@ type Number = Int {
 }
 ```
 
-It can be called as `Type:assoc_val` outside the definition scope
+It can be called as `Type:assoc_val` outside the definition scope. As with functions and types, it can be defined outside the definition scope
+
+```rs
+type Number = Int
+
+val max_num Number = 2_147_483_647
+```
 
 ## `tag`
 
@@ -261,7 +275,7 @@ tag #text #printable { // Only #printable types can be tagged with #text
 } 
 ```
 
-If more than one tag is required use `#(tag1, tag2, tag3)`
+If more than one tag is required use a compound tag `#(tag1, tag2, tag3)`
 
 ### Tagging a Type
 
@@ -282,6 +296,24 @@ tag Int #from(WeekDay) {
     }
 }
 ```
+
+### Using Tags
+
+Tags works as union types of all types that are tagged (compound tags works as set of types in the intersection of the tags being composed). When calling a tag associated function for a known type use the `Type#tag:function` notation. When using the tag as a union type just call `#tag:function` and give enough information so the compiler may in infer the type.
+
+```rs
+Int#from:from(WeekDay.sunday) // We know which implementation of #from:from to use
+#from:from(WeekDay.sunday) $$ Int // Same thing here since we assert the output type is Int
+#printable:format(12345) // Here we know it's Int#printable:format
+```
+
+```rs
+fn sum(a #into(Int), b #into(Int)) -> Int = #into:into(Int; a) + #into:into(Int; b)
+
+println(sum(Bool.true, 89.9)); // 1 + 89 = 90
+```
+
+Tags associated members can be defined outside the definition scope, but they must provide a default value.
 
 ## `val`
 
