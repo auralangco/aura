@@ -42,10 +42,10 @@ Int:mult(Int:add, Int:add); // (lhs (lhs Int, rhs Int), rhs (lhs Int, rhs Int)) 
 
 ## Labeled Bodies
 
-If the last arguments of a call are functional values, they can be passed outside the parenthesis with their identfier.
+If the last arguments of a call are lists, branches or functions, they can be passed outside the parenthesis with their identfier (if only one argument is being passed, the identifier can be omited).
 
 ```rs
-// fn_if(cond Bool, then () -> $T, else () -> $T) -> $T
+// fn _if(cond Bool, then () -> $T, else () -> $T) -> $T
 _if(true) then { 10 } else { 0 }; 
 
 // fn_for(col #iterable($T), do ($T) -> Void) -> Void
@@ -55,22 +55,22 @@ _for(0..10) do (it Int) -> { IO::println("${it}"); };
 Or if the arguments are branching values
 
 ```rs
-// fn_while(init $T, do $T => Flow($T), else () -> Void)
+// fn _while(init $T, do $T => Flow($T), else () -> Void)
 
 _while(10) do {
     it : it > 1 && Int:is_odd(it) => {
         IO::println("Odd");
-        @next(3*it + 1)
+        Next(3*it + 1)
     },
     it : it > 1 && Int:is_even(it) => {
         IO::println("Even");
-        @next(it / 2)
+        Next(it / 2)
     },
     _ => {
         IO::println("Reached 1");
-        @break
+        Break
     }
 } else {
-    IO::println("Init must be greater than 1);
+    IO::println("Init must be greater than 1");
 }
 ```
