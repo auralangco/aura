@@ -302,4 +302,24 @@ Only literals can be passed to `val` (it means, no function calls) and they are 
 
 ## Type System
 
+## Operators
 
+- `=` bind operator
+- `+ - * / % **` arithmetic operators
+- `&& || !` logic operators
+- `++` concatenation operator
+- `[ ]` list operator
+- `{ }` block operator
+- `expression . identifier` property access (access a field or variant)
+- `Type : identifier` associated access (access a associated member in a type)
+- `...expression` spread operator
+- `input -> output` function operator. Used in the function type notation and closure creation
+- `pattern => expression` branch operator. Used in the branch type notation and branch maps creation.
+- `value |> function` pipe-forward applies the lhs value as argument to the rhs function
+- `value $> Type` type cast operator
+- `value $$ Type` type assertion operator
+- `pattern ~ guard` guard operator. Used to separate the pattern capture and the guard in a pattern
+- `expression ??` hard-unwrap operator. Gets the value wrapped or crashes otherwise
+- `expression ?= default` unwrap-or-default operator if the value can't be unwrapped returns `default`
+- `expression ?. field` safe field access operator
+- `expression ?> function` safe piping operator
