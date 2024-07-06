@@ -20,13 +20,15 @@ Represents characters
 
 - `Char`: utf-8 char
 
-### Atom
+### Identifier
 
-- `Atom` `:[a-z]([a-z0-9]|-)*`: it is its own value
+Identifier as a literal. Useful for macros
+
+- `Ident` ``` `type```
 
 ### Bool
 
-Booleanic data `:true` or `:false`
+Booleanic data `true` or `false`
 
 - `Bool`
 
@@ -34,7 +36,7 @@ Booleanic data `:true` or `:false`
 
 Represents non-data
 
-- `Void` `:null`
+- `Void` `null` `Void.Null`
 
 ## Collection Types
 
@@ -50,13 +52,9 @@ Represents non-data
 
 - A linked list of type T
 
-### `Object(T)`
+### `Map(K #(hash, eq); K, V)`
 
-- A sequence of data of type `T` indexed by `Atom`
-
-### `Map(#hash, T)`
-
-- A sequence of data of type `T` indexed by `#hash`
+- A sequence of data of type `V` indexed by `K` thats both hasheable and equatable
 
 ## Algebraic Data Types
 
@@ -65,7 +63,7 @@ Represents non-data
 Each variant is named after an Atom and may have associated data
 
 ```txt
-enum ( :variant1 T, :variant2 U, :variant3 V )
+enum ( Variant1 T, Variant2 U, Variant3 V )
 ```
 
 A `match` can be used to safely handle each variant
@@ -73,15 +71,15 @@ A `match` can be used to safely handle each variant
 ```txt
 link (println) = aura/io
 
-type Foo = enum (:foo Int, :bar Bool, :foobar)
+type Foo = enum (Foo Int, Bar Bool, Foobar)
 
 fn foo {
     f = Foo:bar(false);
 
     str = match (f) {
-        :foo f => f $> #printable,
-        :bar b => b $> #printable,
-        :foobar => "null" $> #printable;
+        Foo.Foo f => f |> #printable:from,
+        Foo.Bar b => b |> #printable:from,
+        Foo.Foobar => "null" |> #printable:from;
     }
     
     println(str);
@@ -101,11 +99,10 @@ Each field can be accessed by the `.` operator
 ```txt
 type Foo = struct (foo Int, bar Bool)
 
-pure Foo:invert(foo Foo) -> Foo = (-foo.foo, !foo.bar)
-
+fn Foo:invert(foo Foo) -> Foo = (-foo.foo, !foo.bar)
 ```
 
-Also `Foo.bar` is a function like `pure (foo Foo) -> Bool { foo.bar }`
+Also `Foo.bar` is a function like `(foo Foo) -> Bool { foo.bar }`
 
 ### Compound: Product type
 
@@ -115,28 +112,44 @@ Similar to struct but the fields are named after natural number literals
 (T, U, V, W)
 ```
 
+### Unions: Sum type
+
+Similar to enum but the variants are anonymous and are matched using the type in a match
+
+```txt
+type Number = union (Int, Float)
+
+fn foo {
+    n Number = 10;
+    match (n) {
+        Int => println("n is an Int"),
+        Float => println("n is a Float"),
+    }
+}
+```
+
 ## Monads: computations wrapped by types
 
-### `Nullable(T)` or `?T`
+### `Nullable(T)`
 
 Brings null-safety to Aura
 
-- `:some(T)`: a non-null value
-- `:null`: represents an empty value
+- `Nullable.Some(T)`: a non-null value
+- `Nullable.Null`: represents an empty value
 
-### `Failable(T)` or `!T`
+### `Failable(S, F)`
 
 Makes failures recoverable
 
-- `:succ(T)`: the value that represents success
-- `:fail(#failure)`: the value that represents a failure (a `#failure`)
+- `Failable.Succ(S)`: the value that represents success
+- `Failable.Fail(F)`: the value that represents a failure
 
-### `Async(T)` or `...T`
+### `Async(T)`
 
 Produces a handler to deal with potentially long running calls
 
 ```txt
-handle Async(String) = Async:new(fn () -> udp::recv("0.0.0.0:4000"));
+handle Async(String) = Async:new(() -> udp::recv("0.0.0.0:4000"));
 // Do your stuff
 res Result(String) = Async:await(handle);
 ```
@@ -149,7 +162,6 @@ Closures are a way to write functions as values, non-pure functions may capture 
 
 ```txt
 (args...) -> expr
-pure (args...) -> expr
 ```
 
 ### Functions
@@ -158,14 +170,6 @@ Functional types receives an input and produces an output
 
 ```txt
 (arg1 T, arg2 U) -> V
-```
-
-### Pure Functions
-
-Functions that doesn't produce any side-effects and the only data it captures is static data. The function type consists of two parts (the input and output) divided by a `->`
-
-```txt
-pure (arg1 T, arg2 U) -> V
 ```
 
 ## Casting
