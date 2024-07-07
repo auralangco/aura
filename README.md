@@ -126,7 +126,7 @@ val f Foo(Int, String) = Foo(Int, String; 123, "abc")
 Also for the later fields, if they are: `List`, `->` or `=>` they can be passed with their identifier outside the parenthesis. Also if only the last non-defaultable field is being passed outside, the label can be omited.
 
 ```rs
-type Map(T, U) = struct (value T, map T -> U)
+type Map(T, U) = (value T, map T -> U)
 
 val m Map(Int, String) = Map(10) map (value) -> { value*20 } // map (value) -> value*20 // map { it*20 }
 ```
@@ -328,9 +328,137 @@ Only literals can be passed to `val` (it means, no function calls) and they are 
 
 ## `main`
 
+The entrypoint for a executable program, is just a short-hand for `fn main`. There are some different possible signatures for the entrypoint type:
+
+- Input: `()` (can be ommited), `(Int, List(String))`
+- Output: `-> Void` (can be ommited), `Result(Void, #failure)`
+
+```rs
+main {} // () -> Void
+main (argc Int, argv List(String)) {} // (Int, String) -> Void
+main -> Result((), #failure) {succ(null)} // () -> Result((), #failure)
+main (argc Int, argv List(String)) -> Result((), #failure) { succ(()) } // (argc Int, argv List(String)) -> Result((), #failure)
+```
+
+Also if the main body is just an expression the `=` can be used just like in regular functions
+
 ## `lib`
 
 ## `fn`
+
+The function definition follows the pattern:
+
+```rs
+fn identifier Input -> Output = body
+```
+
+### The identifier
+
+Functions use `snake_case` names and can be prefixed with `Type:` if they're associated to `Type`
+
+### Input
+
+The input uses the same struct notation: a comma separated list of identifiers with a explicit type and the last fields may have a default value after a `=` sign.
+
+Any generics the function may use are defined before a `;` inside the parenthesis
+
+### Output
+
+The resulting type of the function, if it's `-> Void` both the arrow and the type can be ommited (`fn println(value #printable)` or `fn println(value #printable) -> Void`).
+
+### Body
+
+The body is the code that is evalutated once the function is ran if it's only an expression just use a `= expression` as the body. Other wise if a block of code is needed use `{ statement; statement; statement }` (the last `;` and the initial `=` can be ommited) and the statement value will be used as the value of the function.
+
+### Closures
+
+Functions can be used as values, there are three ways of creating functions: anonymous functions, composition and currying. And both support capture of environment (it means, they are closures).
+
+#### Anonymous functions
+
+Using `(args, ...) -> expression` a function literal is created, inside the expression environment values can be captured, it means they are closures.
+
+```rs
+List(Int):filter((elem) -> elem > 10)
+```
+
+#### Composition
+
+If a function needs a value of type `A` as an argument and a function that returns `A` is provided, they are composed.
+
+```rs
+fn sum(a Int, b Int) -> Int
+
+sum(10, sum); // (a, b) -> sum(10, sum(a, b))
+```
+
+If more arguments are also composed the input types are put into an anonymous struct
+
+```rs
+sum(sum, sum); // (a (a Int, b Int), b (a Int, b Int)) -> sum(a |> sum, b |> sum)
+```
+
+#### Currying
+
+In a function call, arguments assigned with `_` are curried out, so instead of calling the function, a new closure is created with the needed values.
+
+```rs
+increment = sum(1, _); // (b Int) -> sum(1, b)
+alt_sum = sum(_, _); // (a, b) -> sum(a, b)
+```
+
+Currying is also supported with compounds and structs if the type is specified (both within the parenthesis or by the context)
+
+```rs
+(_ String, 123); // (a) -> (a, 123)
+(_, _) $$ Bool, Bool // (a, b) -> (a, b)
+```
+
+### Calling
+
+There are two forms of calling functions: `( )` and `|>`. The former can be used only if the function is bound to an identifier.
+
+#### `( )`
+
+Since the arguments use the same struct notation to define the input type, we use a similar notation for the one used to build structs. You can pass the arguments in order as expected. The last arguments can be labeled with `label =` so they can be specified out-of-order or if the arguments are `List`, `=>` or `->` they can be labeled outside the parenthesis (the label can be ommited if only one argument is being passed the label can be ommited). For `->` being passed outside if the input `(arg, arg2, arg3...) ->` can be ommited and just `{ }` be used refering to the input arguments as `it` or `it.0`, `it.1`, etc.
+
+```rs
+main {
+    // fn if(T; cond Bool, then () -> T, else () -> T = () -> undefined)
+    if (true, () -> println("Hello World"), () -> println("Good bye")) // >> Hello World
+    
+    if (5 == 6) {
+        println("This shouldn't be printed")
+    } // This can't be used as a value since the type is Undefined as said by the default `else` callback
+
+    res = if (-1 > 1) then { "Fizz" } else { "Buzz" }; // if (-1 > 1) else { "Buzz" } then { "Fizz" } is also valid but not semantic in this context
+
+    List:filter([1, 2, 3, 4, 5]) { it % 2 == 0 }; // [2, 4]
+
+    each () values ["Hello", "World", "Aura"] do (str) -> { 
+        String:upper(str) 
+    }; // ["HELLO", "WORLD", "AURA"]
+
+    each(["Hello", "World", "Aura"], String:upper); // ["HELLO", "WORLD", "AURA"]
+}
+```
+
+#### `|>`
+
+The forward piping operator calls the function passed as the right operand with the values passed as the left operand.
+
+```rs
+"Hello World" |> println;
+```
+
+The cool part about this is that functions that aren't bound to a identifier can be called. Also it gives the visual effect of data transformation that is a key concept of functional programming languages.
+
+```rs
+[1, 2, 3, 4, 5, 6, 7, 8]
+|> List:filter(_) { it % 2 == 1 } // [ 1, 3, 5, 7 ]
+|> #iter:map(_) { it * 2 } // [ 2, 6, 10, 14 ]
+|> #iter:reduce(_, 0) (acc, elem) -> { acc + elem } // 32 
+```
 
 ## Type System
 
@@ -342,6 +470,8 @@ Only literals can be passed to `val` (it means, no function calls) and they are 
 - `++` concatenation operator
 - `[ ]` list operator
 - `{ }` block operator
+- `expression :: expression` compound join operator `(A1, A2, ..., An) :: (B1, B2, ..., Bm) = (A1, A2, ..., An, B1, B2, ..., Bm)`
+- `expression \\ int_literal` compound split operator `(A1, A2, ..., An, B1, ..., Bm) \\ n = ((A1, A2, ..., An), (B1, B2, ..., Bm))`
 - `expression . identifier` property access (access a field or variant)
 - `Type : identifier` associated access (access a associated member in a type)
 - `...expression` spread operator
