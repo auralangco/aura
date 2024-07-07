@@ -1,28 +1,48 @@
-# Aura
+<h1 align="center">
+    Aura Lang
+</h1>
 
-Aura is a functional parallelizable multitarget programming language. It means it's meant to be functional first, be easy to run in multicore and in multiple platforms by transpiling to other languages.
+<div  align="center">
+    <img src="https://img.shields.io/github/stars/auralangco/aura" alt="GitHub stars" href="https://github.com/auralangco/aura/stargazers" />
+    <img src="https://img.shields.io/github/release/auralangco/aura" alt="GitHub release" href="https://github.com/auralangco/aura/releases" />
+    <img src="https://img.shields.io/github/license/auralangco/aura" alt="License" href="https://raw.githubusercontent.com/auralangco/aura/master/LICENSE" />
+</div>
 
-## Features
+Aura is a functional multitarget programming language. It means it's meant to be functional first, and easy to run in multiple platforms by transpiling to other languages.
+
+> This is still an alpha specification with no working implementation
+> My implementation of a compiler is [Aurac](https://github.com/auralangco/aurac)
+
+## Table of Contents
+
+- [Core Features](#core-features)
+- [First Steps](#first-steps)
+- [`import`](#import)
+- [`alias`](#alias)
+- [`type`](#type)
+- [`tag`](#tag)
+- [`val`](#val)
+- [`main`](#main)
+- [`fn`](#fn)
+
+
+## Core Features
 
 ### Immutability
 
-There are no variables in Aura, you may give aliases to values, and that's it.
+There are no variables in Aura, you can bind values to names and rebind them later, but no mutability is allowed.
 
 ### Functional
 
-Aura implements several functional programming features such as:
-
-- Functions as values
-- Purity and side-effect management
-- Pattern matching
+Aura implements several functional programming features such as: higher order functions, functions as values, closures, etc
 
 ### Type Safe
 
-Aura uses a type system that ensures operations validity is checked during compile time
+Aura uses a type system that ensures operations validity is checked during compile time while add features so castings aren't too verbose
 
-### Static vs Dynamic
+### Consistent Syntax
 
-Aura atempts to make several compile time operations available in runtime while enforcing proper compile time treatment
+Aura tries to provide a consistent syntax so user created constructs looks like built in constructs.
 
 ## First Steps
 
