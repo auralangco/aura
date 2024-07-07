@@ -24,6 +24,7 @@ Aura is a functional multitarget programming language. It means it's meant to be
 - [`val`](#val)
 - [`main`](#main)
 - [`fn`](#fn)
+- [Operators](#operators)
 
 
 ## Core Features
@@ -399,7 +400,7 @@ Functions can be used as values, there are three ways of creating functions: ano
 Using `(args, ...) -> expression` a function literal is created, inside the expression environment values can be captured, it means they are closures.
 
 ```rs
-List(Int):filter((elem) -> elem > 10)
+List(Int):filter([25, 0, -10, 45, 10], (elem) -> elem > 10)
 ```
 
 #### Composition
