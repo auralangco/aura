@@ -481,6 +481,23 @@ The cool part about this is that functions that aren't bound to a identifier can
 |> #iter:reduce(_, 0) (acc, elem) -> { acc + elem } // 32 
 ```
 
+## `final`
+
+The `final` keyword can prepend `val`, `fn`, and members of `import` to specify that those names cannot be shadowed. It means the name cannot be binded again in function bodies/parameters or other `val` and `fn` statements. But it can still be used in other contexts like fields and variants.
+
+```rs
+import (final println) = aura/io
+
+final fn foo() {}
+
+main {
+    foo Int = 90; // ERROR: `foo` cannot be shadowed
+    println String = "Lorem ipsum dolor"; // ERROR: `println` cannot be shadowed
+}
+```
+
+By default `type`, `alias` and `external` declarations are `final`
+
 ## Type System
 
 ## Naming Rules
