@@ -498,6 +498,27 @@ main {
 
 By default `type`, `alias` and `external` declarations are `final`
 
+## `external`
+
+Since Aura is multitarget, some code might be implemented natively in the target language. `external` is used then to tell the compiler that the symbol is defined outside Aura code.
+
+To use `external` prepend a definition (`val`, `type` or `fn`) with `external "Lang" identifier` where `"Lang"` is the string that identifies the target language.
+
+The general syntax is: `external "Lang" identifier (val | type | fn) external-identifier [type]`. The `external` keyword, followed by the string representing the target language, the name to bind this external symbol in Aura code, what kind of symbol it is (value, type or function) the name in the target language and finally the type expression that represents this symbol.
+
+```rs
+external "C" String type String // Like a typedef const char* String;
+external "JS" String type string
+
+external "C" Void type void
+external "JS" Void type void
+
+external "C" println fn println(String) -> Void // expects that a `void println(String)` exists in C code
+external "JS" println fn log(String) -> Void // expects that a `function log(string): void` exists in JS code
+```
+
+Since the target language naming rules might not be as restrictive as Aura's one can rename the symbol in Aura code, the `external-identifier` can be anything that follows the regex `[a-zA-Z_][a-zA-Z0-9_]*`
+
 ## Type System
 
 ## Naming Rules
