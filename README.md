@@ -521,6 +521,121 @@ Since the target language naming rules might not be as restrictive as Aura's one
 
 ## Type System
 
+### Primitive Types
+
+- `I8`, `I16`, `Int`, `I32`, `I64`
+- `U8`, `U16`, `UInt`, `U32`, `U64`
+- `Float`, `Double`
+- `Bool`
+- `Char`
+
+All those types have no fields, their information can only be accessed as a whole. They can be pattern matched using their literals
+
+```rs
+match (6 $$ Int) {
+    1 => println("One"),
+    2 => println("Two"),
+    3 => println("Three"),
+    4 => println("Four"),
+    5 => println("Five"),
+    6 => println("Six"),
+    x => println(x:to_string()),
+}
+```
+
+### Derivate Types
+
+- `List(T)`
+- `String`
+
+Types that are derived from primitives and can be accessed in parts. `List` and `String` are both `#indexable` and `#iterable` so can be transformed and accessed in many different ways. The literal for `List` is a comma separated list of expressions with `[ ]` while for `String` is a double quoted text.
+
+```rs
+l List(Float) = [8.1, 12.4, 9.6, 4.02];
+l:get(3); // Nullable.some(4.02) $$ Nullable(Float)
+s String = "Hello World":map() { it:upper() }:reverse(); // "DLROW OLLEH"
+```
+
+They can be pattern matched using literals and `++` operator
+
+### Compound Types
+
+- `(T, U, ...)`: a comma separated list of types within `( )`
+
+A compound type is a type which has parts and each part can be of a different type (AKA a _product type_ in ADT language). Its parts can be accessed with `.n` operator where `n` is an integer literal (non-negative).
+
+Pattern matching for compounds is pattern matching againts each component
+
+```rs
+match (("Hello", false, 8) $$ (String, Bool, Int)) {
+    (text, false, 6) => ..., // Won't match
+    ("He" ++ ending, _, 8) => ... // Matches
+    value => // Catch all
+}
+```
+
+Components that aren't matchable must use _catch all_ patterns or ignored
+
+### Union Types
+
+- `T | U | ...`: a pipe separated list of types
+
+The dual of a compound type, its value if of one of its variants which can only be accessed by pattern matching (AKA a _sum type_).
+
+Pattern matching for unions is checking every possible variant:
+
+```rs
+match (7.5 $$ Int | Float | Bool) {
+    i $$ Int => ..., // Won't match
+    7.2 => ..., // Won't match
+    f $$ Float ~ f < 10.0 => ...,// Matches
+    false => ...,// Won't match
+    _ => ...,// Catch all
+}
+```
+
+### Struct Types
+
+- `(t T, u U, ...)`: a compound with named components
+
+Structs are a less generic version of compounds where each component is identified with a name. Pattern match for structs is similar to pattern match for compounds except that:
+
+- The later fields can be ignored using `...`
+- Before `...` fields can be matched out of order using `field_name =` before the pattern
+- The first fields can be matched in-order
+
+```rs
+match ((name = "John Doe", age = 42) $$ (name String, age Int)) {
+    (age = 43, ...) => ,// Won't match
+    (n, a) ~ a < 30 => ,// Same
+    ("John Doe", age) ~ age >= 30 => , // Matches
+    _ => // Catch all 
+}
+```
+
+### Enum Types
+
+- `t T | u U | ...`:  a union with name variants
+
+Enums behave similar to unions but their variants are named (this allows different variants to wrap the same type). If the variant type isn't Void the value can be pattern matched using `( )`
+
+```rs
+type Number = i Int | f Float | nan
+
+match (Number.i(6)) {
+    Number.i(i) ~ i > 6 => ,// Won't match
+    Number.nan => , // NaN
+    Number.f(f) => ,// Won't match
+    Number.i(i) => //Matches
+}
+```
+
+[WIP]: Syntax for anonymous enums
+
+### Functional Types
+
+### Tag Types
+
 ## Naming Rules
 
 > Those are not conventions nor recommendations
