@@ -483,6 +483,14 @@ The cool part about this is that functions that aren't bound to a identifier can
 
 ## Type System
 
+## Naming Rules
+
+> Those are not conventions nor recommendations
+
+- `snake_case` (`[a-z][a-z0-9_]*`): values (`val`, binds, function parameters and pattern match captures), functions, fields (in structs), variants (in enums)
+- `PascalCase` (`[A-Z][a-zA-Z]*`): types
+- `#kebab-case` (`#[a-z][a-z-]*`): tags
+
 ## Keywords
 
 - `external`: The current definition is made in an external language
