@@ -483,12 +483,31 @@ The cool part about this is that functions that aren't bound to a identifier can
 
 ## Type System
 
+## Keywords
+
+- `external`: The current definition is made in an external language
+- `enum`*: [WIP] declares a enum type
+- `final`: The current definition identifier cannot be shadowed
+- `fn`: Defines a function
+- `import`: Imports a module
+- `lib`: Defines the current module as a library and the exposed interface (what simbols are exported)
+- `main`: Defines the current module as an executable and defines the entrypoint code
+- `matchfn`: Defines a function using pattern matching in it's declaration
+- `mod`: Declares a submodule as exportable in a `lib` statement
+- `struct`*: [WIP] declares a struct type
+- `tag`: Both defines a new tag or tags an existing type
+- `type`: Defines a type
+- `union`*: [WIP] declares a union type
+- `val`: Defines a compiletime known constant value
+
 ## Operators
 
 - `=` bind operator
 - `+ - * / % **` arithmetic operators
 - `&& || !` logic operators
 - `++` concatenation operator
+- `~:` composition operator
+- `_` currying operator
 - `[ ]` list operator
 - `{ }` block operator
 - `expression :: expression` compound join operator `(A1, A2, ..., An) :: (B1, B2, ..., Bm) = (A1, A2, ..., An, B1, B2, ..., Bm)`
@@ -497,12 +516,12 @@ The cool part about this is that functions that aren't bound to a identifier can
 - `Type : identifier` associated access (access a associated member in a type)
 - `...expression` spread operator
 - `input -> output` function operator. Used in the function type notation and closure creation
-- `pattern => expression` branch operator. Used in the branch type notation and branch maps creation.
-- `value |> function` pipe-forward applies the lhs value as argument to the rhs function
-- `value $> Type` type cast operator
-- `value $$ Type` type assertion operator
+- `capture => expression` branch operator. Used in the branch type notation and branch maps creation.
+- `expression |> expression` pipe-forward applies the lhs value as argument to the rhs function
+- `expression $> Type` type cast operator
+- `expression $$ Type` type assertion operator
 - `pattern ~ guard` guard operator. Used to separate the pattern capture and the guard in a pattern
 - `expression ??` hard-unwrap operator. Gets the value wrapped or crashes otherwise
-- `expression ?= default` unwrap-or-default operator if the value can't be unwrapped returns `default`
-- `expression ?. field` safe field access operator
-- `expression ?> function` safe piping operator
+- `expression ?= expression` unwrap-or-default operator if the lhs value can't be unwrapped returns rhs
+- `expression ?. identifier` safe field access operator
+- `expression ?> expression` safe piping operator
