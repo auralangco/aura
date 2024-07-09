@@ -1,20 +1,17 @@
-use aura/io
+import aura/io
 
-// The main function may crashes
-main act -> !Void {
-    let name = {
-        (io/println "What is your name? ");
+main {
+    name = {
+        io/println("What is your name? ");
         // Read a line from the stdin and crashes if an error happens
-        !(io/readln)
-    }
+        io/readln()??
+    };
 
-    let age = {
-        (io/println "How old are you? ")
-        // Reads a line, crashes if on error and assigns it to `age`
-        let age !(io/readln)
-        // Parses the string to an Int and crashes if not parseable
-        !(age:parse Int)
-    }
+    age = {
+        io/println("How old are you? ");
+        // Reads a line, if Result.succ pipes to String:parse
+        io/readln()?? |> String:parse(Int; _)??
+    };
 
-    (io/println `Hello, ${name}! You're ${age} years old, right?`)
+    io/println("Hello, " ++ name ++ "! You're" age:to_string() "years old, right?")
 }

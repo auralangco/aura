@@ -1,22 +1,28 @@
-type Category enum (:suv :hatch :sedan :sport)
+type Category = suv | hatch | sedan | sport
 
-type Car obj (
-    String .name 
-    Int .value 
-    Category .category
-) impl (
-    ::new (String name Int value Category category) -> Self obj (name value category)
+type Car = ( name String, value Int, category Category) {
+    fn new(name String, value Int, category Category) -> Self = (name, value, category)
     
-    :adulterate (Int value) -> Self obj (self.name value self.category)
+    fn adulterate (self, value Int) -> Self = (value = value, ...self)
     
-    :is_suv () -> Bool match self {
-        Category:suv => true
+    matchfn is_suv(self) -> Bool {
+        (Category.suv) => true
         _ => false
     }
-) impl #eq<Self Self> (
-    :eq (Self other) -> Bool :(
-        self.name == other.name &&
-        self.value == other.value &&
-        self.category == other.category
-    )
-)
+ }
+
+tag Category #eq {
+    fn eq(self, other Self) -> Bool = match (self, other) {
+        (Self.suv, Self.suv) => true,
+        (Self.hatch, Self.hatch) => true,
+        (Self.sedan, Self.sedan) => true,
+        (Self.sport, Self.sport) => true,
+        _ => false
+    }
+}
+
+tag Car #eq {
+    fn eq(self, other Self) -> Bool =  self.name == other.name 
+                                    && self.value == other.value 
+                                    && self.category == other.category
+}
