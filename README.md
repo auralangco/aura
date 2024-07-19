@@ -649,11 +649,12 @@ match (Number.i(6)) {
 - `external`: The current definition is made in an external language
 - `enum`*: [WIP] declares a enum type
 - `final`: The current definition identifier cannot be shadowed
-- `fn`: Defines a function
 - `import`: Imports a module
 - `lib`: Defines the current module as a library and the exposed interface (what simbols are exported)
 - `main`: Defines the current module as an executable and defines the entrypoint code
+- `fn`: Defines a function
 - `matchfn`: Defines a function using pattern matching in it's declaration
+- `loopfn`: Defines a function with tail call optimization in it's root
 - `mod`: Declares a submodule as exportable in a `lib` statement
 - `struct`*: [WIP] declares a struct type
 - `tag`: Both defines a new tag or tags an existing type
