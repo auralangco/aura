@@ -613,6 +613,14 @@ match ((name = "John Doe", age = 42) $$ (name String, age Int)) {
 }
 ```
 
+Structs support the `.` and `=.` operations:
+
+- `expr.field` gets the value of the field `field`
+- `Type.ident` gets a function that receives `Type` and return the value of the field `field`
+- `expr.field(new_value)` produces a copy of `expr` but replacing the value of `field` to `new_value`
+- `ident=.field` gets the value of the field `field` and binds it to `ident`
+- `ident=.field(new_value)` produces a copy of `ident` but replacing the value of `field` to `new_value` and binds it to `ident`
+
 ### Enum Types
 
 - `t T | u U | ...`:  a union with name variants
@@ -630,11 +638,39 @@ match (Number.i(6)) {
 }
 ```
 
+Enums support the `.` and `=.` operations:
+
+- `Type.variant`: produces a new value with the given `variant`
+- `expr.variant`: produces a new value with the given `variant`
+- `Type.variant(...)`: produces a new value with the given `variant` where it carries some data (can be used to capture data in pattern matching)
+- `expr.variant(...)`: produces a new value with the given `variant` where it carries some data (can be used to capture data in pattern matching)
+- `ident=.variant`: if the enum is of the given `variant`, we bind the carried data to `ident`
+
 [WIP]: Syntax for anonymous enums
 
 ### Functional Types
 
 ### Tag Types
+
+### Associated Members
+
+Every type (and tag) can have its associated members (`val`, `fn` or `type`), we use `:` to get access to associated members. This operator can be used both with the type or with an expression. If used with the type in a associated function, a new first parameter araises if the function uses `self`, otherwise `self` is bound to the expression being used.
+
+- `Type:TypeIdent` or `expr:TypeIdent`: gets the associated type
+- `Type:val_ident` or `expr:val_ident`: gets the associated value
+- `Type:fn_ident`: gets the associated function as a function expression with the extra `self` argument
+- `expr:fn_ident`: gets the associated function as a function expression without the extra `self` argument (binds it to `expr`)
+- `Type:fn_ident(...)` or `expr:fn_ident(...)` : calls the respective associated function
+
+The special `=:` operator can be used with both associated values and functions in the following scenarios:
+
+- `ident=:val_ident`: same as `ident = ident:val_ident`
+- `ident=:fn_ident`: same as `ident = ident:fn_ident`
+- `ident=:fn_ident(...)`: same as `ident = ident:fn_ident(...)`
+
+### Type Parameters
+
+In the type definition, some generic type parameters can be added within `( )` before the `=` in a `type` statement.
 
 ## Naming Rules
 
