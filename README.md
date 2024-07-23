@@ -666,24 +666,32 @@ match (Number.i(6)) {
 
 - `=` bind operator
 - `+ - * / % **` arithmetic operators
-- `&& || !` logic operators
+- `=+ =- =* =/ =% =** ` bind arithmetic operators
+- `&& || ! == != > < >= <=` logic operators
+- `=!` bind not operator
 - `++` concatenation operator
+- `=++` bind concat operator
 - `~:` composition operator
 - `_` currying operator
 - `[ ]` list operator
 - `{ }` block operator
-- `expression :: expression` compound join operator `(A1, A2, ..., An) :: (B1, B2, ..., Bm) = (A1, A2, ..., An, B1, B2, ..., Bm)`
-- `expression \\ int_literal` compound split operator `(A1, A2, ..., An, B1, ..., Bm) \\ n = ((A1, A2, ..., An), (B1, B2, ..., Bm))`
-- `expression . identifier` property access (access a field or variant)
-- `Type : identifier` associated access (access a associated member in a type)
-- `...expression` spread operator
-- `input -> output` function operator. Used in the function type notation and closure creation
-- `capture => expression` branch operator. Used in the branch type notation and branch maps creation.
-- `expression |> expression` pipe-forward applies the lhs value as argument to the rhs function
-- `expression $> Type` type cast operator
-- `expression $$ Type` type assertion operator
-- `pattern ~ guard` guard operator. Used to separate the pattern capture and the guard in a pattern
-- `expression ??` hard-unwrap operator. Gets the value wrapped or crashes otherwise
-- `expression ?= expression` unwrap-or-default operator if the lhs value can't be unwrapped returns rhs
-- `expression ?. identifier` safe field access operator
-- `expression ?> expression` safe piping operator
+- `::` compound join operator `(A1, A2, ..., An) :: (B1, B2, ..., Bm) = (A1, A2, ..., An, B1, B2, ..., Bm)`
+- `=::` bind join operator
+- `\\` compound split operator `(A1, A2, ..., An, B1, ..., Bm) \\ n = ((A1, A2, ..., An), (B1, B2, ..., Bm))`
+- `=\\` bind split operator
+- `.` property access (access a field or variant)
+- `=.` bind property operator
+- `:` associated access (access a associated member)
+- `=:` bind associated operator
+- `...` spread operator
+- `->` function operator. Used in the function type notation and closure creation
+- `=>` branch operator. Used in the branch type notation and branch maps creation.
+- `~` guard operator. Used to separate the pattern capture and the guard in a pattern
+- `|>` pipe-forward applies the lhs value as argument to the rhs function
+- `$>` type cast operator
+- `$$` type assertion operator
+- `??` hard-unwrap operator. Gets the value wrapped or crashes otherwise
+- `=??` bind unwrap operator
+- `?=` unwrap-or-default operator if the lhs value can't be unwrapped returns rhs
+- `?.` safe field access operator
+- `?>` safe piping operator
