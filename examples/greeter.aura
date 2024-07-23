@@ -1,17 +1,15 @@
-import aura/io
-
 main {
     name = {
-        io/println("What is your name? ");
+        println("What is your name? ");
         // Read a line from the stdin and crashes if an error happens
-        io/readln()??
+        readln()??
     };
 
     age = {
-        io/println("How old are you? ");
+        println("How old are you? ");
         // Reads a line, if Result.succ pipes to String:parse
-        io/readln()?? |> String:parse(Int; _)??
+        readln()?? |> Int:parse |> Result:unwrap
     };
 
-    io/println("Hello, " ++ name ++ "! You're" age:to_string() "years old, right?")
+    println("Hello, " ++ name ++ "! You're" age:to_string() "years old, right?")
 }

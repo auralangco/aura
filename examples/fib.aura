@@ -1,0 +1,9 @@
+loopfn fib(n Int, current Int, following Int) -> Int {
+    if (n == 0) then {
+        break(current)
+    } else {
+        continue((n-1, following, current + following))
+    }
+}
+
+main = println(fib(10, 0, 1):to_string())

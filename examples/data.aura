@@ -1,11 +1,12 @@
 link {println} = aura/io
 
-type Number = (:int Int | :float Float)
+type Number = int Int | float Float
 
 main = act {
     n = Number:int(10);
 
-    match n as
-        :int(i) => println(`Integer ${i}`),
-        :float(f) => println(`Float ${f}`);
+    match (n) {
+        int(i) => println(`Integer ${i}`),
+        float(f) => println(`Float ${f}`);
+    }
 }

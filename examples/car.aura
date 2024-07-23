@@ -6,13 +6,13 @@ type Car = ( name String, value Int, category Category) {
     fn adulterate (self, value Int) -> Self = (value = value, ...self)
     
     matchfn is_suv(self) -> Bool {
-        (Category.suv) => true
+        (_, _, Category.suv) => true
         _ => false
     }
  }
 
 tag Category #eq {
-    fn eq(self, other Self) -> Bool = match (self, other) {
+    matchfn eq(self, other Self) -> Bool {
         (Self.suv, Self.suv) => true,
         (Self.hatch, Self.hatch) => true,
         (Self.sedan, Self.sedan) => true,
