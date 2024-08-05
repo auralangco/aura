@@ -47,24 +47,7 @@ Aura tries to provide a consistent syntax so user created constructs looks like 
 
 ## First Steps
 
-An Aura file can represent a library or an executable. The general syntax for a file is:
-
-```rs
-// `import` statements
-
-// `alias`
-
-// `type` statements
-
-// `tag` statements
-
-// `val` statements
-
-// `main` statement if it's an executable
-// `lib` statement if it's a library
-
-// `fn` statements
-```
+An Aura file can represent a library or an executable
 
 ## `import`
 
@@ -184,7 +167,7 @@ If no type is provided for a variant it's `Void`
 To build a value of a enum just specify the variant and the value.
 
 ```rs
-val n Number = Number.Float(8.8)
+val n Number = Number.float(8.8)
 ```
 
 To work with enums use a `match`
@@ -329,7 +312,7 @@ Int#from:from(WeekDay.sunday) // We know which implementation of #from:from to u
 ```
 
 ```rs
-fn sum(a #into(Int), b #into(Int)) -> Int = #into:into(Int; a) + #into:into(Int; b)
+fn sum(a #into(Int), b #into(Int)) -> Int = a:into() + b:into()
 
 println(sum(Bool.true, 89.9)); // 1 + 89 = 90
 ```
@@ -477,8 +460,8 @@ The cool part about this is that functions that aren't bound to a identifier can
 ```rs
 [1, 2, 3, 4, 5, 6, 7, 8]
 |> List:filter(_) { it % 2 == 1 } // [ 1, 3, 5, 7 ]
-|> #iter:map(_) { it * 2 } // [ 2, 6, 10, 14 ]
-|> #iter:reduce(_, 0) (acc, elem) -> { acc + elem } // 32 
+|> List:map(_) { it * 2 } // [ 2, 6, 10, 14 ]
+|> List:reduce(_, 0) (acc, elem) -> { acc + elem } // 32 
 ```
 
 ## `final`

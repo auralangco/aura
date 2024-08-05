@@ -1,6 +1,6 @@
 # Branching
 
-The branching type `T => U` is built with patterns and expressions. By calling the match operator (`:=`) the branching structure will execute the first branch whose pattern matches the right hand side of the operator.
+The branching type `T => U` is built with patterns and expressions. By calling the match operator (`~~`) the branching structure will execute the first branch whose pattern matches the right hand side of the operator.
 
 ```txt
 br Int => String = {
@@ -9,51 +9,95 @@ br Int => String = {
     _ => "Less than five"
 }
 
-res String = br := 10; // "Greater than five"
+res String = br ~~ 10; // "Greater than five"
 ```
 
 ## Patterns
 
-There are several accepted patterns, but it depends on the nature of `T`. Important to remember that _ can be used as a ignore capture
+There are several accepted patterns, but it depends on the nature of `A` (`A => B`). Important to remember that `_` can be used as a ignore capture (aka catch all)
 
 ### Primitive
 
 - Literal: a literal of the type
 - Bind: matches anything and captures the value
 
+```
+match (12) {
+    3 => ...,
+    x ~ x > 6 => ...,
+    _ => ...
+}
+``` 
+
+To be exaustive must have a catch all 
+
 ### String
 
-Regexes with captures can be used with the ```x`` ``` notation
+String literals
 
-### Compound
+```
+match ("Hello World") {
+    "Bye World" => ...,
+    "Hello World" => ...,
+    str ~ str:length() > 5 => ...
+}
+``` 
 
-Same as primitive, but for each field of the compound
+To be exaustive must have a catch all 
 
-### Structure
+### Union
 
-Same as compound but the name given to the bind matters
+Each branch covers one variant of the union. The pattern should be a bind `name Type`, just the type or a pattern of the given type.
 
-### Enumeration
+```
+match (15 $$ Int | Float) {
+    x Int ~ x > 60 => ...,
+    Float => ...,
+    x Int => ...,
+}
+``` 
 
-Agregated atoms `@atom(value)`are used as the pattern. Where pattern matching standards also apply to the value
+To be exaustive, must exaust every variant
 
 ### Lists
 
 `[ ]` are used to the define the pattern, each element passed will be matched with the initial part of the list, the last element matches the remainder of the list.
 
-### Map / Object
+```
+match ([1, 2, 3, 4, 5, 6]) {
+    [6, 5, x] => ..., // x is the remainder of the list
+    [1, 2, 3, []] => ..., // Wont match since the reimainder actually is [4, 5, 6]
+    [1, x] ~ x:length() > 0 => ..., // Matches 
+}
+```
 
-TODO
+> Note that `x` and `[x]` are the same thing
+
+> To be exaustive, must have a catch all
+
+
+### Enum
+
+Similarly to union patterns, covers variants of a enum, but the capture is done within `( )` after the variant name. The variant can be identified as `Type.variant` or just `.variant` since we know the type.
+
+```
+match (.succ(15) $$ Result(Int; Float)) {
+    .succ(o) => ...,
+    .fail(0.5) => ...,
+    .fail(_) => ...,
+}
+```
+
+To be exaustive must exaust every variant 
+
+### Compound
+
+Each field is pattern matched on it's own
+
+### Structure
+
+Same as compound but the name given to the bind matters
 
 ### Tag
 
-A `value Type` can be used to capture a value of a tag type downcasting it.
-
-```rs
-text = 10 #> #printable;
-res = {
-    str String => "It's a string",
-    int Int => "It's a number",
-    _ => "Unknown" 
-} := text
-```
+Behaves the almost the same as union pattern, but must have a catch all to be exaustive
