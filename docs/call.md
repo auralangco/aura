@@ -4,14 +4,15 @@ Calls execute a function, either to produce state or data. There are some differ
 
 ## Standard
 
-The standard call is by giving the name of the function to be called and then a compound expression with the arguments
+The standard call syntax is by giving the identifier of the function to be called and then a struct expression with the arguments
 
 ```rs
-IO::println("Hello World"); // This produces state (prints text to the console)
+@io:println("Hello World"); // This produces state (prints text to the console)
 List:replicate("Hi", 10); // This produces data (a new list)
+List:map([1, 2, 3, 4], f = (e) -> { e + 1 }); // Produces a new list by mapping
 ```
 
-## Partial
+### Partial
 
 By providing less arguments then needed (by using the `_` keyword) is possible to create a partial call that will produce a function to complete the call
 
@@ -26,7 +27,7 @@ Int:power(_, 5); // (base Int) -> Int:power(base, 5)
 The `|>` operator passes the values on the left side as the input of the function on the right side.
 
 ```rs
-"Hello World" |> IO::println;
+"Hello World" |> @io:println;
 5 |> Int:power(2, _);
 (2, 5) |> Int:power;
 ```
@@ -48,29 +49,28 @@ If the last arguments of a call are lists, branches or functions, they can be pa
 // fn _if(cond Bool, then () -> $T, else () -> $T) -> $T
 _if(true) then { 10 } else { 0 }; 
 
-// fn_for(col #iterable($T), do ($T) -> Void) -> Void
-_for(0..10) do (it Int) -> { IO::println("${it}"); };
+// fn _for(col #iterable($T), do ($T) -> Void) -> Void
+_for(0..10) do (it Int) -> { IO::println(it:to_string()); };
 ```
 
 Or if the arguments are branching values
 
 ```rs
-// fn _while(init $T, do $T => Flow($T), else () -> Void)
-
+// fn _while(T; init T, do T => Flow(T, Void), else () -> Void)
 _while(10) do {
-    it : it > 1 && Int:is_odd(it) => {
-        IO::println("Odd");
-        Next(3*it + 1)
+    it ~ it > 1 && Int:is_odd(it) => {
+        @io:println("Odd");
+        continue(3*it + 1)
     },
-    it : it > 1 && Int:is_even(it) => {
-        IO::println("Even");
-        Next(it / 2)
+    it ~ it > 1 && Int:is_even(it) => {
+        @io:println("Even");
+        continue(it / 2)
     },
     _ => {
-        IO::println("Reached 1");
-        Break
+        @io:println("Reached 1");
+        break
     }
 } else {
-    IO::println("Init must be greater than 1");
+    @io:println("Init must be greater than 1");
 }
 ```
