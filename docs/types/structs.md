@@ -1,20 +1,20 @@
 # Structs: Product Types
 
-Structs are a specialization of compounds where each part is indexed by an identifier as `(v1 T1, v2 T2, ..., vn Tn)`.
+Structs are a specialization of compounds where each part is indexed by an identifier as `struct(v1 T1, v2 T2, ..., vn Tn)`.
 
 ## Default Values
 
 A struct may define default values (literals or expressions) for a field if it's the last field or every field after it also has default values.
 
 ```
-type Car = struct (name String, brand String = "Ferrari", year UInt = 2024)
+type Car = struct(name String, brand String = "Ferrari", year UInt = 2024)
 
 c Car = ("LaFerrari", year = 2012)
 ```
 
 ## Casting
 
-Since compounds are said more general than structs, the compound `(T1, T2, ..., Tn)` can be auto casted into a struct `(v1 T1, v2 T2, ..., vn Tn)`.
+Since compounds are said more general than structs, the compound `(T1, T2, ..., Tn)` can be auto casted into a struct `struct(v1 T1, v2 T2, ..., vn Tn)`.
 
 ## Labeled Expressions
 

@@ -568,7 +568,7 @@ The dual of a compound type, its value if of one of its variants which can only 
 Pattern matching for unions is checking every possible variant:
 
 ```rs
-match (7.5 $$ Int | Float | Bool) {
+match (7.5 $$ union(Int, Float, Bool)) {
     i $$ Int => ..., // Won't match
     7.2 => ..., // Won't match
     f $$ Float ~ f < 10.0 => ...,// Matches
@@ -579,7 +579,7 @@ match (7.5 $$ Int | Float | Bool) {
 
 ### Struct Types
 
-- `(t T, u U, ...)`: a compound with named components
+- `struct(t T, u U, ...)`: a compound with named components
 
 Structs are a less generic version of compounds where each component is identified with a name. Pattern match for structs is similar to pattern match for compounds except that:
 
@@ -588,7 +588,7 @@ Structs are a less generic version of compounds where each component is identifi
 - The first fields can be matched in-order
 
 ```rs
-match ((name = "John Doe", age = 42) $$ (name String, age Int)) {
+match ((name = "John Doe", age = 42) $$ struct(name String, age Int)) {
     (age = 43, ...) => ,// Won't match
     (n, a) ~ a < 30 => ,// Same
     ("John Doe", age) ~ age >= 30 => , // Matches
@@ -606,7 +606,7 @@ Structs support the `.` and `=.` operations:
 
 ### Enum Types
 
-- `t T | u U | ...`:  a union with name variants
+- `enum(t T, u U, ...)`:  a union with name variants
 
 Enums behave similar to unions but their variants are named (this allows different variants to wrap the same type). If the variant type isn't Void the value can be pattern matched using `( )`
 
@@ -666,19 +666,17 @@ In the type definition, some generic type parameters can be added within `( )` b
 ## Keywords
 
 - `external`: The current definition is made in an external language
-- `enum`*: [WIP] declares a enum type
+- `enum`: declares a enum type
 - `final`: The current definition identifier cannot be shadowed
 - `import`: Imports a module
-- `lib`: Defines the current module as a library and the exposed interface (what simbols are exported)
 - `main`: Defines the current module as an executable and defines the entrypoint code
 - `fn`: Defines a function
 - `matchfn`: Defines a function using pattern matching in it's declaration
 - `loopfn`: Defines a function with tail call optimization in it's root
-- `mod`: Declares a submodule as exportable in a `lib` statement
-- `struct`*: [WIP] declares a struct type
+- `struct`: declares a struct type
 - `tag`: Both defines a new tag or tags an existing type
 - `type`: Defines a type
-- `union`*: [WIP] declares a union type
+- `union`: declares a union type
 - `val`: Defines a compiletime known constant value
 
 ## Operators
