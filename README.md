@@ -464,6 +464,10 @@ The cool part about this is that functions that aren't bound to a identifier can
 |> List:reduce(_, 0) (acc, elem) -> { acc + elem } // 32 
 ```
 
+#### `return!`
+
+A built-in macro that short finishes the current function body
+
 ## `final`
 
 The `final` keyword can prepend `val`, `fn`, and members of `import` to specify that those names cannot be shadowed. It means the name cannot be binded again in function bodies/parameters or other `val` and `fn` statements. But it can still be used in other contexts like fields and variants.
@@ -712,3 +716,58 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `?=` unwrap-or-default operator if the lhs value can't be unwrapped returns rhs
 - `?.` safe field access operator
 - `?>` safe piping operator
+
+## Bodies
+
+Bodies are defined by `{ }`
+
+### Function Body (`->`)
+
+A body that produces a function
+
+```rs
+// A Function with no arguments that prints "Hello World"
+-> { println("Hello World"); }
+// A function that sums `a` with `b` (types are infered from the context)
+(a, b) -> { a + b }
+```
+
+### Branch Body (`~ =>`)
+
+A body that produces a branching expression
+
+```rs
+{ 
+    "hello" => println("Hello"),
+    "bye" => println("Not hello"),
+    _ => println("Idk")
+}
+```
+
+### Match Function Body
+
+A combination of _function body_ and _branch body_
+
+```rs
+(a Int) -> {
+    0 => "zero",
+    a ~ a < 0 => "negative"
+    a ~ a % 2 == 0 => "even",
+    _ => "odd"
+}
+```
+
+### Local Body
+
+Creates a body for local variable definitions, may return a value, ain't a function because it is still in the scope of the calling function.
+
+```rs
+fn foo -> Int { // Function body A
+    a = -> { // Function body B
+        return!(10) // Return affects this function body B  
+    };
+    a = { // Still body A 
+        return!(20) // Return affects the function body A
+    }
+}
+```
