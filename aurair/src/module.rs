@@ -1,7 +1,9 @@
 use crate::decl::{fn_::FnBody, FnDecl, TypeDecl, ValDecl};
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct Mod {
-    pub decls: Vec<ModDecl>
+    pub decls: Vec<ModDecl>,
+    pub main: Option<MainDecl>,
 }
 
 /// IR Node that refeers to declaration statements in Aura
@@ -27,7 +29,6 @@ pub enum ModDecl {
     Val(ValDecl),
     Fn(FnDecl),
     Type(TypeDecl),
-    Main(MainDecl),
 }
 
 #[derive(Debug, Clone, PartialEq)]

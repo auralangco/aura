@@ -1,6 +1,6 @@
 use fn_::FnBody;
 
-use crate::{literal::Literal, tyexpr::{FnType, TypeExpr}};
+use crate::{expr::literal::Literal, tyexpr::{FnType, TypeExpr}};
 
 pub mod fn_;
 
