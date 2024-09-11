@@ -1,4 +1,8 @@
+use fn_::FnBody;
+
 use crate::{literal::Literal, tyexpr::{FnType, TypeExpr}};
+
+pub mod fn_;
 
 /// IR Node that represents a value declaration in Aura
 /// 
@@ -34,5 +38,6 @@ pub struct TypeDecl {
 #[derive(Debug, Clone, PartialEq)]
 pub struct FnDecl {
     pub symbol: String,
-    pub ty: FnType
+    pub ty: FnType,
+    pub body: FnBody
 }

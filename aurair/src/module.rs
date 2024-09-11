@@ -1,4 +1,4 @@
-use crate::decl::{TypeDecl, ValDecl};
+use crate::decl::{fn_::FnBody, FnDecl, TypeDecl, ValDecl};
 
 pub struct Mod {
     pub decls: Vec<ModDecl>
@@ -25,7 +25,10 @@ pub struct Mod {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ModDecl {
     Val(ValDecl),
-    Fn,
+    Fn(FnDecl),
     Type(TypeDecl),
-    Main,
+    Main(MainDecl),
 }
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MainDecl(pub FnBody);
