@@ -7,8 +7,8 @@ pub enum Expr {
     Literal(Literal),
     Ident(String),
     Call(Box<Expr>, StructExpr),
-    CompoundExpr(CompoundExpr),
-    StructExpr(StructExpr),
+    Compound(CompoundExpr),
+    Struct(StructExpr),
 }
 
 #[derive(Debug, Clone, PartialEq)]
