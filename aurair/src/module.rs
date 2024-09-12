@@ -1,5 +1,6 @@
 use crate::decl::{fn_::FnBody, FnDecl, TypeDecl, ValDecl};
 
+///  Root node for Aura modules
 #[derive(Debug, Clone, PartialEq)]
 pub struct Mod {
     pub imports: Vec<Import>,
@@ -32,9 +33,27 @@ pub enum ModDecl {
     Type(TypeDecl),
 }
 
+/// Node that represents the main entrypoint in Aura
+/// 
+/// Use only for the main module in a binary application
+/// 
+/// # Example
+/// ```norun
+/// main {
+///    println("Hello, World!")
+/// }
+/// ```
 #[derive(Debug, Clone, PartialEq)]
 pub struct MainDecl(pub FnBody);
 
+/// Node that represents an import statement in Aura
+/// 
+/// # Example
+/// 
+/// ```norun
+/// import aura/io // Imports the io module
+/// import m = aura/math // Imports the math module with alias m
+/// ```
 #[derive(Debug, Clone, PartialEq)]
 pub struct Import {
     pub path: String,

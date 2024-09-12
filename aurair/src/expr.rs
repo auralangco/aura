@@ -4,6 +4,10 @@ use crate::tyexpr::TypeExpr;
 
 pub mod literal;
 
+/// Node to describe an expression in Aura
+/// 
+/// Expression are the building blocks of Aura code, they can be literals, identifiers, calls, operations, etc. 
+/// They produce a value and can be used in many places in the code.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     Literal(Literal),
@@ -15,22 +19,59 @@ pub enum Expr {
     Access(Access)
 }
 
+/// Node to describe a compound expression in Aura
+/// 
+/// This is a list of expressions where the order matter
+/// 
+/// # Example
+/// ```norun
+/// main {
+///     origin (Int, Int) = (0, 0)
+/// }
+/// ```
 #[derive(Debug, Clone, PartialEq)]
 pub struct CompoundExpr(pub Vec<Expr>);
 
+/// Node to describe a struct expression in Aura
+/// 
+/// This is a struct expression where the type is inferred from the context
+/// 
+/// # Example
+/// ```norun
+/// type Person = (name String, age Int)
+/// 
+/// main {
+///     p Person = (name = "Aura", age = 0)
+/// }
+/// ```
 #[derive(Debug, Clone, PartialEq)]
 pub struct StructExpr {
     pub positional: Vec<Expr>,
     pub named: Vec<(String, Expr)>,
 }
 
+/// Node to describe a specific struct expression in Aura
+/// 
+/// This is a struct expression where the type is explicitly declared
+/// 
+/// # Example
+/// 
+/// ```norun
+/// type Person = (name String, age Int)
+/// 
+/// main {
+///     p Person = Person(name = "Aura", age = 0)
+/// }
+/// ```
+#[derive(Debug, Clone, PartialEq)]
 pub struct SpecificStructExpr {
     pub ty: TypeExpr,
     pub positional: Vec<Expr>,
     pub named: Vec<(String, Expr)>,
 }
 
-/// Node to describe all operations in Aura that produces a value 
+/// Node to describe all operations in Aura that produces a value by using 
+/// operators (symbols)
 #[derive(Debug, Clone, PartialEq)]
 pub enum Operation {
     /// Expr + Expr
