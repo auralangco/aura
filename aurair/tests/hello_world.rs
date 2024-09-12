@@ -18,6 +18,7 @@ mod tests {
     /// ```
     fn test_hello_world() {
         let main = Mod {
+            imports: vec![],
             decls: [
                 ModDecl::Val(ValDecl {
                     symbol: "msg".into(),

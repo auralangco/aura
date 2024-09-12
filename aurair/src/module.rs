@@ -2,6 +2,7 @@ use crate::decl::{fn_::FnBody, FnDecl, TypeDecl, ValDecl};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Mod {
+    pub imports: Vec<Import>,
     pub decls: Vec<ModDecl>,
     pub main: Option<MainDecl>,
 }
@@ -33,3 +34,9 @@ pub enum ModDecl {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MainDecl(pub FnBody);
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Import {
+    pub path: String,
+    pub alias: Option<String>,
+}
