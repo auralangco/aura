@@ -1,4 +1,4 @@
-use crate::expr::Expr;
+use crate::{expr::Expr, tyexpr::TypeExpr};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum FnBody {
@@ -8,6 +8,13 @@ pub enum FnBody {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Statement {
-    Bind,
+    Bind(BindStmt),
     Expr(Expr),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct BindStmt {
+    pub symbol: String,
+    pub ty: TypeExpr,
+    pub value: Expr,
 }
