@@ -24,6 +24,12 @@ pub struct StructExpr {
     pub named: Vec<(String, Expr)>,
 }
 
+pub struct SpecificStructExpr {
+    pub ty: TypeExpr,
+    pub positional: Vec<Expr>,
+    pub named: Vec<(String, Expr)>,
+}
+
 /// Node to describe all operations in Aura that produces a value 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Operation {
