@@ -1,5 +1,6 @@
 use crate::decl::{fn_::FnBody, FnDecl, TypeDecl, ValDecl};
 
+// TODO: submodules, lib decl
 ///  Root node for Aura modules
 #[derive(Debug, Clone, PartialEq)]
 pub struct Mod {

@@ -1,5 +1,6 @@
 use crate::{expr::Expr, tyexpr::TypeExpr};
 
+// TODO: Other bodies
 /// Node for function body in Aura
 /// 
 /// A body is where state can be produced by binding values to names for later use
@@ -9,6 +10,7 @@ pub enum FnBody {
     Block(Vec<Statement>),
 }
 
+// TODO: Operation-Bind statements
 /// The building block of a body, where state can be produced
 #[derive(Debug, Clone, PartialEq)]
 pub enum Statement {
