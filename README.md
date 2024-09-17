@@ -346,6 +346,14 @@ main (argc Int, argv List(String)) -> Result((), #failure) { succ(()) } // (argc
 
 Also if the main body is just an expression the `=` can be used just like in regular functions
 
+### Permissions
+
+The `main` is a permission producer, there one must specificy the permissions the program will consume.
+
+```
+main ($io) = println("Hello World");
+```
+
 ## `lib`
 
 ## `fn`
@@ -462,6 +470,19 @@ The cool part about this is that functions that aren't bound to a identifier can
 |> List:filter(_) { it % 2 == 1 } // [ 1, 3, 5, 7 ]
 |> List:map(_) { it * 2 } // [ 2, 6, 10, 14 ]
 |> List:reduce(_, 0) (acc, elem) -> { acc + elem } // 32 
+```
+
+#### Permissions
+
+When calling a function it may need a given set of permissions so the permission must be available in the current top-level scope.
+
+For instance, `File:open` requires `$fs` so it can operate on the host filesystem. When calling this function make sure the caller has `$fs`.
+
+```rs
+// Ask for filesystem permission
+fn open_file($fs; path String) -> Result(File, Error) {
+    File:open(path) // This call only works because we ask for $fs in the function signature
+}
 ```
 
 ## `final`
@@ -662,6 +683,7 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `snake_case` (`[a-z][a-z0-9_]*`): values (`val`, binds, function parameters and pattern match captures), functions, fields (in structs), variants (in enums)
 - `PascalCase` (`[A-Z][a-zA-Z]*`): types
 - `#kebab-case` (`#[a-z][a-z-]*`): tags
+- `$dot.kebab-case` (`$[a-z][a-z.-]*[a-z]+`): permissions
 
 ## Keywords
 
