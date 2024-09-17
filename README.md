@@ -632,7 +632,7 @@ Structs support the `.` and `=.` operations:
 Enums behave similar to unions but their variants are named (this allows different variants to wrap the same type). If the variant type isn't Void the value can be pattern matched using `( )`
 
 ```rs
-type Number = i Int | f Float | nan
+type Number = enum(i Int, f Float, nan)
 
 match (Number.i(6)) {
     Number.i(i) ~ i > 6 => ,// Won't match
@@ -688,7 +688,7 @@ In the type definition, some generic type parameters can be added within `( )` b
 ## Keywords
 
 - `external`: The current definition is made in an external language
-- `enum`: declares a enum type
+- `enum`: declares an enum type
 - `final`: The current definition identifier cannot be shadowed
 - `import`: Imports a module
 - `main`: Defines the current module as an executable and defines the entrypoint code
@@ -698,7 +698,7 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `struct`: declares a struct type
 - `tag`: Both defines a new tag or tags an existing type
 - `type`: Defines a type
-- `union`: declares a union type
+- `union`: declares an union type
 - `val`: Defines a compiletime known constant value
 
 ## Operators
@@ -707,7 +707,6 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `+ - * / % **` arithmetic operators
 - `=+ =- =* =/ =% =** ` bind arithmetic operators
 - `&& || ! == != > < >= <=` logic operators
-- `=!` bind not operator
 - `++` concatenation operator
 - `=++` bind concat operator
 - `~:` composition operator
@@ -720,7 +719,7 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `=\\` bind split operator
 - `.` property access (access a field or variant)
 - `=.` bind property operator
-- `:` associated access (access a associated member)
+- `:` associated access (access an associated member)
 - `=:` bind associated operator
 - `...` spread operator
 - `->` function operator. Used in the function type notation and closure creation
