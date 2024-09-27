@@ -782,7 +782,6 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `+ - * / % **` arithmetic operators
 - `=+ =- =* =/ =% =** ` bind arithmetic operators
 - `&& || ! == != > < >= <=` logic operators
-- `=!` bind not operator
 - `++` concatenation operator
 - `=++` bind concat operator
 - `~:` composition operator
