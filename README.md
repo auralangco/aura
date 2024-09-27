@@ -122,7 +122,7 @@ The final fields may have default values. There is an implicit casting from (Str
 Note: if the type has generics, pass them before a `;` inside the parenthesis (if needed, Aura has type inference)
 
 ```rs
-type Foo(T, U) = (foo T, bar U)
+type Foo(T, U) = struct (foo T, bar U)
 
 val f Foo(Int, String) = Foo(Int, String; 123, "abc")
 ```
@@ -130,7 +130,7 @@ val f Foo(Int, String) = Foo(Int, String; 123, "abc")
 Also for the later fields, if they are: `List`, `->` or `=>` they can be passed with their identifier outside the parenthesis. Also if only the last non-defaultable field is being passed outside, the label can be omited.
 
 ```rs
-type Map(T, U) = (value T, map T -> U)
+type Map(T, U) = struct (value T, map T -> U)
 
 val m Map(Int, String) = Map(10) map (value) -> { value*20 } // map (value) -> value*20 // map { it*20 }
 ```
@@ -140,7 +140,7 @@ val m Map(Int, String) = Map(10) map (value) -> { value*20 } // map (value) -> v
 A union type is a type that can assume values of a set of different types
 
 ```rs
-type Number = Int | Float
+type Number = union (Int, Float)
 
 val n Number = 8
 ```
@@ -159,7 +159,7 @@ match(n) {
 A enum is a union whose variants are named.
 
 ```rs
-type Number = i Int | f Float | v
+type Number = enum (i Int, f Float, v)
 ```
 
 If no type is provided for a variant it's `Void`
@@ -184,7 +184,7 @@ match (n) {
 A type can have functions bound to it (called as `Type:function_name`). Those are defined with `fn` inside `{ }` after the type definition
 
 ```rs
-type Number = i Int | f Float {
+type Number = enum (i Int, f Float) {
     fn as_int(self) -> Int = match(self) {
         Self.i(i) => i,
         Self.f(f) => f |> Float:to_int,
@@ -286,9 +286,9 @@ If more than one tag is required use a compound tag `#(tag1, tag2, tag3)`
 The `tag` statement is also used to tag a type. Just specify the type being tagged, the tag and then fulfill the associated members definitions.
 
 ```rs
-type WeekDay = sunday | monday | tuesday | wednesday | thursday | friday | saturday
+type WeekDay = enum (sunday, monday, tuesday, wednesday, thursday, friday, saturday)
 
-tag Int #from(WeekDay) {
+tag #from(WeekDay) = Int {
     fn from(value WeekDay) -> Self = match(value) {
         WeekDay.sunday => 1,
         WeekDay.monday => 2,
@@ -339,7 +339,7 @@ The entrypoint for a executable program, is just a short-hand for `fn main`. The
 
 ```rs
 main {} // () -> Void
-main (argc Int, argv List(String)) {} // (Int, String) -> Void
+main (argc Int, argv List(String)) {} // (Int, List(String)) -> Void
 main -> Result((), #failure) {succ(null)} // () -> Result((), #failure)
 main (argc Int, argv List(String)) -> Result((), #failure) { succ(()) } // (argc Int, argv List(String)) -> Result((), #failure)
 ```
@@ -383,7 +383,10 @@ Functions can be used as values, there are three ways of creating functions: ano
 Using `(args, ...) -> expression` a function literal is created, inside the expression environment values can be captured, it means they are closures.
 
 ```rs
-List(Int):filter([25, 0, -10, 45, 10], (elem) -> elem > 10)
+List(Int):filter([25, 0, -10, 45, 10], (elem) -> { elem > 10 })
+List(Int):filter([25, 0, -10, 45, 10]) with (elem) -> { 
+    elem > 10 
+}
 ```
 
 #### Composition
@@ -404,18 +407,18 @@ sum(sum, sum); // (a (a Int, b Int), b (a Int, b Int)) -> sum(a |> sum, b |> sum
 
 #### Currying
 
-In a function call, arguments assigned with `_` are curried out, so instead of calling the function, a new closure is created with the needed values.
+In a function call, arguments assigned with `_ T` are curried out, so instead of calling the function, a new closure is created with the needed values. The type `T` must be specified
 
 ```rs
-increment = sum(1, _); // (b Int) -> sum(1, b)
-alt_sum = sum(_, _); // (a, b) -> sum(a, b)
+increment = sum(1, _ Int); // (b Int) -> sum(1, b)
+alt_sum = sum(_ Int, _ Int); // (a, b) -> sum(a, b)
 ```
 
 Currying is also supported with compounds and structs if the type is specified (both within the parenthesis or by the context)
 
 ```rs
 (_ String, 123); // (a) -> (a, 123)
-(_, _) $$ Bool, Bool // (a, b) -> (a, b)
+(_ Bool, _ Bool); // (a, b) -> (a, b)
 ```
 
 ### Calling
@@ -424,22 +427,22 @@ There are two forms of calling functions: `( )` and `|>`. The former can be used
 
 #### `( )`
 
-Since the arguments use the same struct notation to define the input type, we use a similar notation for the one used to build structs. You can pass the arguments in order as expected. The last arguments can be labeled with `label =` so they can be specified out-of-order or if the arguments are `List`, `=>` or `->` they can be labeled outside the parenthesis (the label can be ommited if only one argument is being passed the label can be ommited). For `->` being passed outside if the input `(arg, arg2, arg3...) ->` can be ommited and just `{ }` be used refering to the input arguments as `it` or `it.0`, `it.1`, etc.
+Since the arguments use the same struct notation to define the input type, we use a similar notation for the one used to build structs. You can pass the arguments in order as expected. The last arguments can be labeled with `label =` so they can be specified out-of-order or if the arguments are `List`, `=>` or `->` they can be labeled outside the parenthesis. For `->` being passed outside if the input is `()` it can be ommited.
 
 ```rs
 main {
-    // fn if(T; cond Bool, then () -> T, else () -> T = () -> undefined)
-    if (true, () -> println("Hello World"), () -> println("Good bye")) // >> Hello World
+    // fn if(T; cond Bool, then () -> T, else () -> T = () -> { undefined })
+    if (true, () -> { println("Hello World") }, () -> { println("Good bye") }) // >> Hello World
     
-    if (5 == 6) {
+    if (5 == 6) then -> {
         println("This shouldn't be printed")
     } // This can't be used as a value since the type is Undefined as said by the default `else` callback
 
-    res = if (-1 > 1) then { "Fizz" } else { "Buzz" }; // if (-1 > 1) else { "Buzz" } then { "Fizz" } is also valid but not semantic in this context
+    res = if (-1 > 1) then -> { "Fizz" } else -> { "Buzz" }; // if (-1 > 1) else { "Buzz" } then { "Fizz" } is also valid but not semantic in this context
 
     List:filter([1, 2, 3, 4, 5]) { it % 2 == 0 }; // [2, 4]
 
-    each () values ["Hello", "World", "Aura"] do (str) -> { 
+    each values ["Hello", "World", "Aura"] do (str) -> { 
         String:upper(str) 
     }; // ["HELLO", "WORLD", "AURA"]
 
@@ -459,14 +462,10 @@ The cool part about this is that functions that aren't bound to a identifier can
 
 ```rs
 [1, 2, 3, 4, 5, 6, 7, 8]
-|> List:filter(_) { it % 2 == 1 } // [ 1, 3, 5, 7 ]
-|> List:map(_) { it * 2 } // [ 2, 6, 10, 14 ]
-|> List:reduce(_, 0) (acc, elem) -> { acc + elem } // 32 
+|> List:filter(_) where (it) -> { it % 2 == 1 } // [ 1, 3, 5, 7 ]
+|> List:map(_) with (it) -> { it * 2 } // [ 2, 6, 10, 14 ]
+|> List:reduce(_, 0) with (acc, elem) -> { acc + elem } // 32 
 ```
-
-#### `return!`
-
-A built-in macro that short finishes the current function body
 
 ## `final`
 
@@ -483,7 +482,7 @@ main {
 }
 ```
 
-By default `type`, `alias` and `external` declarations are `final`
+By default `main`, `type`, `alias` and `external` declarations are `final`
 
 ## `external`
 
@@ -540,7 +539,7 @@ Types that are derived from primitives and can be accessed in parts. `List` and 
 ```rs
 l List(Float) = [8.1, 12.4, 9.6, 4.02];
 l:get(3); // Nullable.some(4.02) $$ Nullable(Float)
-s String = "Hello World":map() { it:upper() }:reverse(); // "DLROW OLLEH"
+s String = "Hello World":map(Char:upper):reverse(); // "DLROW OLLEH"
 ```
 
 They can be pattern matched using literals and `++` operator
@@ -563,9 +562,17 @@ match (("Hello", false, 8) $$ (String, Bool, Int)) {
 
 Components that aren't matchable must use _catch all_ patterns or ignored
 
+#### Compound Values
+
+To create a new compound values create a comma-separated list of values delimited by parenthesis.
+
+```rs
+val origin (Int, Int) = (0, 0) // A compound value
+```
+
 ### Union Types
 
-- `T | U | ...`: a pipe separated list of types
+- `union (T, U, ...)`: a pipe separated list of types
 
 The dual of a compound type, its value if of one of its variants which can only be accessed by pattern matching (AKA a _sum type_).
 
@@ -581,9 +588,17 @@ match (7.5 $$ union(Int, Float, Bool)) {
 }
 ```
 
+#### Union Values
+
+A value of type `T` can automatically casted into a union that contains `T`
+
+```rs
+val number union (Int, Float) = 6.28 // This is a Float, but is autocasted into a union (Int, Float)
+```
+
 ### Struct Types
 
-- `struct(t T, u U, ...)`: a compound with named components
+- `struct (t T, u U, ...)`: a compound with named components
 
 Structs are a less generic version of compounds where each component is identified with a name. Pattern match for structs is similar to pattern match for compounds except that:
 
@@ -608,6 +623,47 @@ Structs support the `.` and `=.` operations:
 - `ident=.field` gets the value of the field `field` and binds it to `ident`
 - `ident=.field(new_value)` produces a copy of `ident` but replacing the value of `field` to `new_value` and binds it to `ident`
 
+#### Struct Values
+
+First of all, a compound value that is structurally identical to a struct can be autocasted. Remember, the order of the fields matter.
+
+```rs
+type Person = struct (name String, age Int)
+
+val doe Person = ("John Doe", 37) // This works 
+val ipsum Person = (42, "Lorem Ipsum") // This doesnt, the order matters
+```
+
+A value can be created for an annonymous struct type if all the fields are labelled
+
+```rs
+main {
+    // A value of an annonymous struct type struct (name String, color String, value Float) 
+    grape = (name = "Grape", color = "Purple", value = 1.5);
+}
+```
+
+When creating a type for a non-anon struct type, we support positional fields in the begginging and labelled fields at the end (they can't be mixed)
+
+```rs
+type Car = struct (brand String, model String, year Int, color String)
+
+val car Car = ("Ferrari", "Italia", color = "Red", year = 2016)
+```
+
+When using labelled fields we support a special syntax for `List(T)`, `T => U` and `T -> U` where they can be labelled outside the parenthesis
+
+```rs
+type Craziness = struct (values List(Int), match Int => Bool, do Bool -> String)
+
+val foo Craziness = () values [1, 2, 3, 4] match {
+    x ~ x % 2 == 0 => false,
+    _ => true
+} do (b) -> {
+    b:format()
+}
+```
+
 ### Enum Types
 
 - `enum(t T, u U, ...)`:  a union with name variants
@@ -615,7 +671,7 @@ Structs support the `.` and `=.` operations:
 Enums behave similar to unions but their variants are named (this allows different variants to wrap the same type). If the variant type isn't Void the value can be pattern matched using `( )`
 
 ```rs
-type Number = i Int | f Float | nan
+type Number = enum (i Int, f Float, nan)
 
 match (Number.i(6)) {
     Number.i(i) ~ i > 6 => ,// Won't match
@@ -635,9 +691,42 @@ Enums support the `.` and `=.` operations:
 
 [WIP]: Syntax for anonymous enums
 
+#### Enum Values
+
+To produce a new value of a given enum either use `Type.variant(...)` or `expr.variant(...)` to produce a value of said variant for the given type (the `( )` are only needed if the variant has any carry data)
+
+```rs
+type MaybeNaN = enum (number Float, nan)
+
+val nan = MaybeNaN.nan
+val number = MaybeNaN.number(3.14) // or even nan.number(3.14) if you're too lazy to write `MaybeNaN` again
+```
+
 ### Functional Types
 
+A function type can be expressed in two ways:
+
+- `(T1, T2, ...) -> U` for closures
+- `(a1 T1, a2 T2, ...) -> U` for `fn` functions
+
+Basicly either a compound type or a struct type followed by an arrow and the output type. The output type can be ommited if it's void, but not the arrow.
+
+### Branching Types
+
 ### Tag Types
+
+Tags can be used as types
+
+```rs
+val a #add(Int) = 5 // A value that can be added to Int 
+```
+
+Moreover, compound tags can be used to specify an even higher amount of tags a type must have to be accepted, the syntax is similar to a compound, but prefixed with `#`, the tags within it don't need to have the `#`
+
+```rs
+// In fact, Int can be added to, multiplied by, subtracted by and divided by an Int 
+val a #(add(Int), mul(Int), sub(Int), div(Int)) = 42 
+```
 
 ### Associated Members
 
