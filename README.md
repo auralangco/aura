@@ -110,10 +110,10 @@ The fields in compounds are indexed by an integer literal. The casting logic is 
 Just compounds with named fields.
 
 ```rs
-type Car = (name String, brand String, year UInt = 2024)
+type Car = struct (name String, brand String, year UInt = 2024)
 
 val c1 Car = ("LaFerrari", "Ferrari", 2012)
-val c2 Car = ("Huracan", "Lamborghini", year = 2015)
+val c2 Car = ("Huracan", year = 2015, brand = "Lamborghini")
 val c3 Car = Car("Zonda R", "Pagani")
 ```
 
@@ -148,7 +148,7 @@ val n Number = 8
 There is an implicit cast from a type T to a union type U if T is in the union of types that form U. But there is no way to cast U into T. Use a `match` for this.
 
 ```rs
-match(n) {
+match(n) do {
     Int => println("It's an integer ${n}"),
     Float => println("It's a float ${n}")
 }
@@ -167,13 +167,13 @@ If no type is provided for a variant it's `Void`
 To build a value of a enum just specify the variant and the value.
 
 ```rs
-val n Number = Number.float(8.8)
+val n Number = Number.f(8.8)
 ```
 
 To work with enums use a `match`
 
 ```rs
-match (n) {
+match (n) do {
     Number.i(i) => println("It's an integer ${i}"),
     Number.f(f) => println("It's a float ${f}")
 }
@@ -185,13 +185,13 @@ A type can have functions bound to it (called as `Type:function_name`). Those ar
 
 ```rs
 type Number = enum (i Int, f Float) {
-    fn as_int(self) -> Int = match(self) {
+    fn as_int(self) -> Int = match(self) do {
         Self.i(i) => i,
-        Self.f(f) => f |> Float:to_int,
+        Self.f(f) => Int:from(f),
     }
 
-    fn as_float(self) -> Float = match(self) {
-        Self.i(i) => i |> Int:to_float,
+    fn as_float(self) -> Float = match(self) do {
+        Self.i(i) => Float:from(i),
         Self.f(f) => f,
     }
 }
@@ -235,7 +235,7 @@ Also values can be associated to types using similar syntax
 
 ```rs
 type Number = Int {
-    val max_num Number = 2_147_483_647
+    val max_num Self = 2_147_483_647
 }
 ```
 
@@ -244,7 +244,7 @@ It can be called as `Type:assoc_val` outside the definition scope. As with funct
 ```rs
 type Number = Int
 
-val max_num Number = 2_147_483_647
+val Number:max_num Number = 2_147_483_647
 ```
 
 ## `tag`
@@ -289,7 +289,7 @@ The `tag` statement is also used to tag a type. Just specify the type being tagg
 type WeekDay = enum (sunday, monday, tuesday, wednesday, thursday, friday, saturday)
 
 tag #from(WeekDay) = Int {
-    fn from(value WeekDay) -> Self = match(value) {
+    fn from(value WeekDay) -> Self = match(value) do {
         WeekDay.sunday => 1,
         WeekDay.monday => 2,
         WeekDay.tuesday => 3,
@@ -346,6 +346,10 @@ main (argc Int, argv List(String)) -> Result((), #failure) { succ(()) } // (argc
 
 Also if the main body is just an expression the `=` can be used just like in regular functions
 
+```rs
+main = println("Hello World")
+```
+
 ## `lib`
 
 ## `fn`
@@ -384,7 +388,7 @@ Using `(args, ...) -> expression` a function literal is created, inside the expr
 
 ```rs
 List(Int):filter([25, 0, -10, 45, 10], (elem) -> { elem > 10 })
-List(Int):filter([25, 0, -10, 45, 10]) with (elem) -> { 
+List(Int):filter([25, 0, -10, 45, 10]) by (elem) -> { 
     elem > 10 
 }
 ```
@@ -518,7 +522,7 @@ Since the target language naming rules might not be as restrictive as Aura's one
 All those types have no fields, their information can only be accessed as a whole. They can be pattern matched using their literals
 
 ```rs
-match (6 $$ Int) {
+match (6 $$ Int) do {
     1 => println("One"),
     2 => println("Two"),
     3 => println("Three"),
