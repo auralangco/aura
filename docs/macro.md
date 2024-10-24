@@ -24,21 +24,28 @@ While functions use regular types, macros use metatypes that describe the type o
 - `@crash expr Expr -> Expr`: Crashes the program emiting the expression as the message
 - `@fail expr Expr -> Expr`: Same as `@return fail(...)`
 - `@ok expr Expr -> Expr`: Same as `@return ok(...)`
+- `@break expr Expr -> Expr`: Short finishes the current looping scope returning `break(...)`
+- `@continue expr Expr -> Expr`: Short finishes the current looping scope returning `continue(...)`
 - `@typeof expr Expr -> Ty`: Get's the type of an expression
 - `@loop f FnDecl -> FnDecl`: Involves the body of the function in a loop
-- `@match f FnDecl -> FnDecl`
-- `@async f FnDecl -> FnDecl`
+- `@match f FnDecl -> FnDecl`: Creates a match function
+- `@async f FnDecl -> FnDecl`: Creates an async function
+- `@io f FnDecl -> FnDecl`: Creates a function with io capabilities
+- `@fs f FnDecl -> FnDecl`: Creates a function with filesystem capabilities
+- `@net f FnDecl -> FnDecl`: Creates a function with networking capabilities
+- `@requires(c: Capability) f FnDecl -> FnDecl`: Creates a function that needs a given capability
+- `@revoke(c: Capability) expr Expr -> Expr`: revokes a capability when evaluating an expression
 
 ## Declaring Macros
 
 ```rs
-macro @macro-name (param1 ty1, param2 ty2) input MetaType -> MetaType
+macro @name (param1 ty1, param2 ty2) input MetaType -> MetaType
 ```
 
-- `@macro-name`: identificador da macro
-- Lista de parâmetros extras da macro
-- Parâmetro de entrada
-- Tipo de saída
+- `@name`: macro identifier (`@[a-z]+([:a-z])*`)
+- Value parameters
+- Input: construct that will be transformed
+- Output
 
 ## Calling Macros
 
@@ -51,9 +58,13 @@ fn foo() -> I32 {
 
 @loop fn mid(initial I32, end I32) -> I32 {
     if (initial >= end) then {
-        break(initial)
+        @break initial
     } else {
-        continue(initial + 1, end - 1)
+        @continue (initial + 1, end - 1)
     }
+}
+
+@io fn println(p: #printable) {
+    ...
 }
 ```
