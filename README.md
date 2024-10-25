@@ -65,8 +65,8 @@ The alias statement is wuite useful to shorten symbols (identifiers for values, 
 ```rs
 alias true Bool.true
 alias false Bool.false
-alias succ Result.succ
-alias fail Result.fail
+alias succ Failure.succ
+alias fail Failure.fail
 alias null Void.null
 alias some Nullable.some
 alias none Nullable.none
@@ -335,13 +335,13 @@ Only literals can be passed to `val` (it means, no function calls) and they are 
 The entrypoint for a executable program, is just a short-hand for `fn main`. There are some different possible signatures for the entrypoint type:
 
 - Input: `()` (can be ommited), `(Int, List(String))`
-- Output: `-> Void` (can be ommited), `Result(Void, #failure)`
+- Output: `-> Void` (can be ommited), `Failure(Void, #failure)`
 
 ```rs
-main {} // () -> Void
-main (argc Int, argv List(String)) {} // (Int, List(String)) -> Void
-main -> Result((), #failure) {succ(null)} // () -> Result((), #failure)
-main (argc Int, argv List(String)) -> Result((), #failure) { succ(()) } // (argc Int, argv List(String)) -> Result((), #failure)
+main -> {} // () -> Void
+main (argc Int, argv List(String)) -> {} // (Int, List(String)) -> Void
+main -> Failure((), #failure) {ok(null)} // () -> Failure(Void, #failure)
+main (argc Int, argv List(String)) -> Failure((), #failure) { ok(null) } // (argc Int, argv List(String)) -> Failure((), #failure)
 ```
 
 Also if the main body is just an expression the `=` can be used just like in regular functions
@@ -370,9 +370,11 @@ The input uses the same struct notation: a comma separated list of identifiers w
 
 Any generics the function may use are defined before a `;` inside the parenthesis
 
+If the input is `()` it can be ommited
+
 ### Output
 
-The resulting type of the function, if it's `-> Void` both the arrow and the type can be ommited (`fn println(value #printable)` or `fn println(value #printable) -> Void`).
+The resulting type of the function, if it's `-> Void` both the type can be ommited (`fn println(value #printable) ->` or `fn println(value #printable) -> Void`).
 
 ### Body
 
@@ -388,7 +390,7 @@ Using `(args, ...) -> expression` a function literal is created, inside the expr
 
 ```rs
 List(Int):filter([25, 0, -10, 45, 10], (elem) -> { elem > 10 })
-List(Int):filter([25, 0, -10, 45, 10]) by (elem) -> { 
+[25, 0, -10, 45, 10]:filter by (elem) -> { 
     elem > 10 
 }
 ```
@@ -444,13 +446,13 @@ main {
 
     res = if (-1 > 1) then -> { "Fizz" } else -> { "Buzz" }; // if (-1 > 1) else { "Buzz" } then { "Fizz" } is also valid but not semantic in this context
 
-    List:filter([1, 2, 3, 4, 5]) { it % 2 == 0 }; // [2, 4]
+    List:filter([1, 2, 3, 4, 5]) by (it) -> { it % 2 == 0 }; // [2, 4]
 
-    each values ["Hello", "World", "Aura"] do (str) -> { 
+    foreach of ["Hello", "World", "Aura"] do (str) -> { 
         String:upper(str) 
     }; // ["HELLO", "WORLD", "AURA"]
 
-    each(["Hello", "World", "Aura"], String:upper); // ["HELLO", "WORLD", "AURA"]
+    foreach(["Hello", "World", "Aura"], String:upper); // ["HELLO", "WORLD", "AURA"]
 }
 ```
 
@@ -466,48 +468,10 @@ The cool part about this is that functions that aren't bound to a identifier can
 
 ```rs
 [1, 2, 3, 4, 5, 6, 7, 8]
-|> List:filter(_) where (it) -> { it % 2 == 1 } // [ 1, 3, 5, 7 ]
+|> List:filter(_) by (it) -> { it % 2 == 1 } // [ 1, 3, 5, 7 ]
 |> List:map(_) with (it) -> { it * 2 } // [ 2, 6, 10, 14 ]
 |> List:reduce(_, 0) with (acc, elem) -> { acc + elem } // 32 
 ```
-
-## `final`
-
-The `final` keyword can prepend `val`, `fn`, and members of `import` to specify that those names cannot be shadowed. It means the name cannot be binded again in function bodies/parameters or other `val` and `fn` statements. But it can still be used in other contexts like fields and variants.
-
-```rs
-import (final println) = aura/io
-
-final fn foo() {}
-
-main {
-    foo Int = 90; // ERROR: `foo` cannot be shadowed
-    println String = "Lorem ipsum dolor"; // ERROR: `println` cannot be shadowed
-}
-```
-
-By default `main`, `type`, `alias` and `external` declarations are `final`
-
-## `external`
-
-Since Aura is multitarget, some code might be implemented natively in the target language. `external` is used then to tell the compiler that the symbol is defined outside Aura code.
-
-To use `external` prepend a definition (`val`, `type` or `fn`) with `external "Lang" identifier` where `"Lang"` is the string that identifies the target language.
-
-The general syntax is: `external "Lang" identifier (val | type | fn) external-identifier [type]`. The `external` keyword, followed by the string representing the target language, the name to bind this external symbol in Aura code, what kind of symbol it is (value, type or function) the name in the target language and finally the type expression that represents this symbol.
-
-```rs
-external "C" String type String // Like a typedef const char* String;
-external "JS" String type string
-
-external "C" Void type void
-external "JS" Void type void
-
-external "C" println fn println(String) -> Void // expects that a `void println(String)` exists in C code
-external "JS" println fn log(String) -> Void // expects that a `function log(string): void` exists in JS code
-```
-
-Since the target language naming rules might not be as restrictive as Aura's one can rename the symbol in Aura code, the `external-identifier` can be anything that follows the regex `[a-zA-Z_][a-zA-Z0-9_]*`
 
 ## Type System
 
@@ -529,7 +493,7 @@ match (6 $$ Int) do {
     4 => println("Four"),
     5 => println("Five"),
     6 => println("Six"),
-    x => println(x:to_string()),
+    x => println(x),
 }
 ```
 
@@ -559,7 +523,7 @@ Pattern matching for compounds is pattern matching againts each component
 ```rs
 match (("Hello", false, 8) $$ (String, Bool, Int)) {
     (text, false, 6) => ..., // Won't match
-    ("He" ++ ending, _, 8) => ... // Matches
+    ("Hello", _, 8) => ... // Matches
     value => // Catch all
 }
 ```
@@ -576,14 +540,14 @@ val origin (Int, Int) = (0, 0) // A compound value
 
 ### Union Types
 
-- `union (T, U, ...)`: a pipe separated list of types
+- `@union (T, U, ...)`: a pipe separated list of types
 
 The dual of a compound type, its value if of one of its variants which can only be accessed by pattern matching (AKA a _sum type_).
 
 Pattern matching for unions is checking every possible variant:
 
 ```rs
-match (7.5 $$ union(Int, Float, Bool)) {
+match (7.5 $$ @union (Int, Float, Bool)) {
     i $$ Int => ..., // Won't match
     7.2 => ..., // Won't match
     f $$ Float ~ f < 10.0 => ...,// Matches
@@ -597,12 +561,12 @@ match (7.5 $$ union(Int, Float, Bool)) {
 A value of type `T` can automatically casted into a union that contains `T`
 
 ```rs
-val number union (Int, Float) = 6.28 // This is a Float, but is autocasted into a union (Int, Float)
+val number @union (Int, Float) = 6.28 // This is a Float, but is autocasted into a union (Int, Float)
 ```
 
 ### Struct Types
 
-- `struct (t T, u U, ...)`: a compound with named components
+- `(t T, u U, ...)`: a compound with named components
 
 Structs are a less generic version of compounds where each component is identified with a name. Pattern match for structs is similar to pattern match for compounds except that:
 
@@ -611,7 +575,7 @@ Structs are a less generic version of compounds where each component is identifi
 - The first fields can be matched in-order
 
 ```rs
-match ((name = "John Doe", age = 42) $$ struct(name String, age Int)) {
+match ((name = "John Doe", age = 42) $$ (name String, age Int)) {
     (age = 43, ...) => ,// Won't match
     (n, a) ~ a < 30 => ,// Same
     ("John Doe", age) ~ age >= 30 => , // Matches
@@ -632,7 +596,7 @@ Structs support the `.` and `=.` operations:
 First of all, a compound value that is structurally identical to a struct can be autocasted. Remember, the order of the fields matter.
 
 ```rs
-type Person = struct (name String, age Int)
+type Person = (name String, age Int)
 
 val doe Person = ("John Doe", 37) // This works 
 val ipsum Person = (42, "Lorem Ipsum") // This doesnt, the order matters
@@ -650,7 +614,7 @@ main {
 When creating a type for a non-anon struct type, we support positional fields in the begginging and labelled fields at the end (they can't be mixed)
 
 ```rs
-type Car = struct (brand String, model String, year Int, color String)
+type Car = (brand String, model String, year Int, color String)
 
 val car Car = ("Ferrari", "Italia", color = "Red", year = 2016)
 ```
@@ -658,7 +622,7 @@ val car Car = ("Ferrari", "Italia", color = "Red", year = 2016)
 When using labelled fields we support a special syntax for `List(T)`, `T => U` and `T -> U` where they can be labelled outside the parenthesis
 
 ```rs
-type Craziness = struct (values List(Int), match Int => Bool, do Bool -> String)
+type Craziness = (values List(Int), match Int => Bool, do Bool -> String)
 
 val foo Craziness = () values [1, 2, 3, 4] match {
     x ~ x % 2 == 0 => false,
@@ -670,12 +634,12 @@ val foo Craziness = () values [1, 2, 3, 4] match {
 
 ### Enum Types
 
-- `enum(t T, u U, ...)`:  a union with name variants
+- `@enum (t T, u U, ...)`:  a union with name variants
 
 Enums behave similar to unions but their variants are named (this allows different variants to wrap the same type). If the variant type isn't Void the value can be pattern matched using `( )`
 
 ```rs
-type Number = enum (i Int, f Float, nan)
+type Number = @enum (i Int, f Float, nan)
 
 match (Number.i(6)) {
     Number.i(i) ~ i > 6 => ,// Won't match
@@ -700,7 +664,7 @@ Enums support the `.` and `=.` operations:
 To produce a new value of a given enum either use `Type.variant(...)` or `expr.variant(...)` to produce a value of said variant for the given type (the `( )` are only needed if the variant has any carry data)
 
 ```rs
-type MaybeNaN = enum (number Float, nan)
+type MaybeNaN = @enum (number Float, nan)
 
 val nan = MaybeNaN.nan
 val number = MaybeNaN.number(3.14) // or even nan.number(3.14) if you're too lazy to write `MaybeNaN` again
@@ -754,26 +718,21 @@ In the type definition, some generic type parameters can be added within `( )` b
 
 ## Naming Rules
 
-> Those are not conventions nor recommendations
+> Those are not conventions nor recommendations, they are mandatory
 
 - `snake_case` (`[a-z][a-z0-9_]*`): values (`val`, binds, function parameters and pattern match captures), functions, fields (in structs), variants (in enums)
 - `PascalCase` (`[A-Z][a-zA-Z]*`): types
-- `#kebab-case` (`#[a-z][a-z-]*`): tags
+- `#kebab-case` (`#[a-z]+(-[a-z]+)*`): tags
+- `@train:case` (`@[a-z]+(:[a-z]+)*:?`): macros
+- `$train:case` (`$[a-z]+(:[a-z]+)*:?`): atoms
 
 ## Keywords
-
-- `external`: The current definition is made in an external language
-- `enum`: declares a enum type
-- `final`: The current definition identifier cannot be shadowed
 - `import`: Imports a module
+- `alias`: Creates an alias
 - `main`: Defines the current module as an executable and defines the entrypoint code
 - `fn`: Defines a function
-- `matchfn`: Defines a function using pattern matching in it's declaration
-- `loopfn`: Defines a function with tail call optimization in it's root
-- `struct`: declares a struct type
 - `tag`: Both defines a new tag or tags an existing type
 - `type`: Defines a type
-- `union`: declares a union type
 - `val`: Defines a compiletime known constant value
 
 ## Operators
@@ -787,7 +746,7 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `~:` composition operator
 - `_` currying operator
 - `[ ]` list operator
-- `{ }` block operator
+- `{ }` scope operator
 - `::` compound join operator `(A1, A2, ..., An) :: (B1, B2, ..., Bm) = (A1, A2, ..., An, B1, B2, ..., Bm)`
 - `=::` bind join operator
 - `\\` compound split operator `(A1, A2, ..., An, B1, ..., Bm) \\ n = ((A1, A2, ..., An), (B1, B2, ..., Bm))`
@@ -809,11 +768,11 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `?.` safe field access operator
 - `?>` safe piping operator
 
-## Bodies
+## Scopes
 
-Bodies are defined by `{ }`
+Scopes are defined by `{ }`
 
-### Function Body (`->`)
+### Function Scope (`->`)
 
 A body that produces a function
 
@@ -849,17 +808,48 @@ A combination of _function body_ and _branch body_
 }
 ```
 
-### Local Body
+### Local Scope
 
 Creates a body for local variable definitions, may return a value, ain't a function because it is still in the scope of the calling function.
 
 ```rs
 fn foo -> Int { // Function body A
     a = -> { // Function body B
-        return!(10) // Return affects this function body B  
+        @return 10 // Return affects this function body B  
     };
     a = { // Still body A 
-        return!(20) // Return affects the function body A
+        @return 20 // Return affects the function body A
     }
 }
+```
+
+### Contextual Scopes
+
+Scopes may be appended a context using `@context:(...)` macro. Contexts are read by macros
+
+```rs
+main -> {
+    not_a_promise Int = @context:($async) { // This appends the $async context to this scope
+        @await async_fn() // `@await` can only be called withing an async scope
+    };
+    promise Async(Int) = @async { // This appends the scope and encapsulates the output in an Async value
+        @await async_fn()
+    }
+}
+```
+
+### Labeled Scopes
+
+Scopes may also be labeled for early returning macros
+
+```rs
+main -> {
+    a = @label:($outer) {
+        @label:($inner) {
+            @return:($outer) 1
+        };
+        5 // Unreachable
+    }
+}
+
 ```

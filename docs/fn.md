@@ -12,12 +12,12 @@ The parameters declaration (before the `->`) uses struct syntax (comma separated
 fn sum(T #sum; a T; b T) -> T = a + b 
 ```
 
-## `matchfn`
+## `@match fn`
 
 Syntatical sugar for a `fn` that does a `match` with the input parameters.
 
 ```rs
-matchfn foo_matchfn(a #number, b #number) -> #number {
+@match fn foo_matchfn(a #number, b #number) -> #number {
     (Int, Int) => a + b,
     (Float, Float) => a + b,
     (Int, Float) => a:into(Float) + b,
@@ -34,13 +34,13 @@ fn foo_fn(a #number, b #number) -> #number = match((a, b)) {
 }
 ```
 
-## `loopfn`
+## `@loop fn`
 
 Similar to `matchfn` but for the `loop` function. Produces a "recursive" function with tail call optimization by nature.
 
 ```rs
 // Gets the nth fibbonacci number if fibc = 0 and fibn = 1
-loopfn fib_loopfn(n UInt, fibc UInt, fibn UInt) -> UInt {
+@loop fn fib_loopfn(n UInt, fibc UInt, fibn UInt) -> UInt {
     if (n == 0) then { 
         break(fibc) 
     } else {

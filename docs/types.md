@@ -20,66 +20,82 @@ Represents characters
 
 - `Char`: utf-8 char
 
-### Identifier
+### Atom
 
-Identifier as a literal. Useful for macros
+A type whose value is the own identifier
 
-- `Ident` ``` `type```
+- `Atom`: `$my:atom`
 
 ### Bool
 
 Booleanic data `true` or `false`
 
-- `Bool`
+- `Bool`: `@enum(true, false)`
 
 ### Void
 
 Represents non-data
 
-- `Void` `null` `Void.Null`
+- `Void` `@enum(null)`
 
 ## Collection Types
 
-### `Array(T)`
+### `List(T)`
 
 - A sequence of data of type T
+
+### `Array(n USize, T)`
+
+- A fixed length sequence of data of type T
 
 ### `String`
 
 - A sequence of `Char`
 
-### `List(T)`
+### `LinkedList(T)`
 
 - A linked list of type T
 
-### `Map(K #(hash, eq); K, V)`
+### `Map(K #(hash, eq), V)`
 
 - A sequence of data of type `V` indexed by `K` thats both hasheable and equatable
+
+### `@const T`
+
+A variant of a type `T` that only accepts compile time known values
+
+### `Never`
+
+A special value that can be virtually cast to any type but panics if it happens
+
+```rs
+type Never = @enum (unvalue)
+```
 
 ## Algebraic Data Types
 
 ### [Enum](./types/enum.md): Sum type
 
-Each variant is named after an Atom and may have associated data
+Each variant is named and may have associated data
 
-```txt
-enum ( Variant1 T, Variant2 U, Variant3 V )
+```rs
+@enum ( variant_1 T, variant2 U, variant3 V )
 ```
 
 A `match` can be used to safely handle each variant
 
-```txt
-link (println) = aura/io
+```rs
+import (println) = aura/io
 
-type Foo = enum (Foo Int, Bar Bool, Foobar)
+type Foo = @enum (foo Int, bar Bool, foobar)
 
-fn foo {
-    f = Foo:bar(false);
+fn foo -> {
+    f = Foo.bar(false);
 
     str = match (f) {
-        Foo.Foo f => f |> #printable:from,
-        Foo.Bar b => b |> #printable:from,
-        Foo.Foobar => "null" |> #printable:from;
+        Foo.foo f => f |> #printable:from,
+        Foo.bar b => b |> #printable:from,
+        Foo.foobar => "null" |> #printable:from;
     }
     
     println(str);
@@ -90,14 +106,14 @@ fn foo {
 
 Each field is named after an Atom and must have a type
 
-```txt
-struct ( field_1 T, field_2 U, field_3 V )
+```rs
+( field_1 T, field_2 U, field_3 V )
 ```
 
 Each field can be accessed by the `.` operator
 
-```txt
-type Foo = struct (foo Int, bar Bool)
+```rs
+type Foo = (foo Int, bar Bool)
 
 fn Foo:invert(foo Foo) -> Foo = (-foo.foo, !foo.bar)
 ```
@@ -108,7 +124,7 @@ Also `Foo.bar` is a function like `(foo Foo) -> Bool { foo.bar }`
 
 Similar to struct but the fields are named after natural number literals
 
-```txt
+```rs
 (T, U, V, W)
 ```
 
@@ -116,14 +132,14 @@ Similar to struct but the fields are named after natural number literals
 
 Similar to enum but the variants are anonymous and are matched using the type in a match
 
-```txt
-type Number = union (Int, Float)
+```rs
+type Number = @union (Int, Float)
 
-fn foo {
+fn foo -> {
     n Number = 10;
     match (n) {
-        Int => println("n is an Int"),
-        Float => println("n is a Float"),
+        _ Int => println("n is an Int"),
+        _ Float => println("n is a Float"),
     }
 }
 ```
@@ -134,42 +150,49 @@ fn foo {
 
 Brings null-safety to Aura
 
-- `Nullable.Some(T)`: a non-null value
-- `Nullable.Null`: represents an empty value
+```rs
+type Nullable(T) = @union (T, Void)
+```
 
 ### `Failable(S, F)`
 
 Makes failures recoverable
 
-- `Failable.Succ(S)`: the value that represents success
-- `Failable.Fail(F)`: the value that represents a failure
+```rs
+type Failable(T, F) = @enum (ok T, fail F)
+```
+
+- `Failable.ok(T)`: the value that represents success
+- `Failable.fail(F)`: the value that represents a failure
+
+### `Control(B, C)`
+
+Describes control flow
+
+```rs
+type Control(B, C) = @enum (break B, continue C)
+```
 
 ### `Async(T)`
 
 Produces a handler to deal with potentially long running calls
 
-```txt
-handle Async(String) = Async:new(() -> udp::recv("0.0.0.0:4000"));
+```rs
+handle Async(String) = Async:new do -> { udp:recv("0.0.0.0:4000") };
 // Do your stuff
-res Result(String) = Async:await(handle);
+res Result(String) = handle:await();
 ```
 
 ## Functional Types
-
-### Closures
-
-Closures are a way to write functions as values, non-pure functions may capture their environment
-
-```txt
-(args...) -> expr
-```
 
 ### Functions
 
 Functional types receives an input and produces an output
 
-```txt
-(arg1 T, arg2 U) -> V
+```rs
+(arg1 T, arg2 U, ...) -> V
+Fn((arg1 T, arg2 U, ...), V) // Same as above
+CapFn(n USize, caps Array(n, Atom), (arg1 T, arg2 U, ...), V) // Same as above but with capabilities 
 ```
 
 ## Casting
@@ -179,3 +202,30 @@ Castings are convertions between different types. The important part of a cast i
 There are automatic castings allowed in Aura. But only from more general types to more specialized if, and only if, the types are structuraly identical.
 
 It means `Int` auto casts to `I32`, also `T` auto casts to `(T)`, but not from `Float` to `Int`.
+
+## Type Parameters
+
+By the identifier of the type, a set of `( )` can be used to pass parameters to the type. Those parameters can be either types or compile-time known values
+
+### Generic Types
+
+When declaring a type, any type identifier passed is a generic type
+
+```rs
+type List(T) = ... // T is a generic type
+type Failure(T, F) = ... // Both T and F are generic types
+```
+
+Generics can be bound by tags so we limit what types can be passed
+
+```rs
+type Map(K #(hash, eq), V) = ... // V can be any type, but K can only be types tagged as #hash and #eq
+```
+
+### Values
+
+When declaring a type, a value identifier followed by its type defines a compile-time known value parameter
+
+```rs
+type Array(n USize, T) = ... // Arrays have a fixed compile-time known size
+```
