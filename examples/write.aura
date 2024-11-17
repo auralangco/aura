@@ -1,13 +1,13 @@
 import (File, IOError) = aura/io
 
-main = {
+@fs @io:write main = {
     // Tries to open the file `README.md` in write mode
     file Result(File, IOError) = File:open("./README.md", File:Mode.write);
     
     match (file) {
         // If the opening fails shows the error
-        fail(err IOError) => eprintln("Failed to open file due to " ++ err:to_string()),
+        fail(err IOError) => eprintln("Failed to open file due to " ++ err),
         // If it succeds write content to the file
-        succ(file File) => file:write("Overwritten")
+        ok(file File) => file:write("Overwritten")
     }
 }

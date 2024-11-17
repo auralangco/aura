@@ -762,10 +762,12 @@ In the type definition, some generic type parameters can be added within `( )` b
 - `|>` pipe-forward applies the lhs value as argument to the rhs function
 - `$>` type cast operator
 - `$$` type assertion operator
-- `??` hard-unwrap operator. Gets the value wrapped or crashes otherwise
-- `=??` bind unwrap operator
+- `?!` hard-unwrap operator. Gets the value wrapped or crashes otherwise
+- `??` unwrap propagate operator
+- `=?!` bind unwrap operator
 - `?=` unwrap-or-default operator if the lhs value can't be unwrapped returns rhs
 - `?.` safe field access operator
+- `?:` safe associated access operator
 - `?>` safe piping operator
 
 ## Scopes

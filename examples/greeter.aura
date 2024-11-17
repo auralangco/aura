@@ -1,4 +1,4 @@
-main {
+@io main -> {
     name = {
         println("What is your name? ");
         // Read a line from the stdin and crashes if an error happens
@@ -8,7 +8,7 @@ main {
     age = {
         println("How old are you? ");
         // Reads a line, if Result.succ pipes to String:parse
-        readln()?? |> Int:parse |> Result:unwrap
+        readln()?! |> Int:parse |> Result:unwrap
     };
 
     println("Hello, " ++ name ++ "! You're" age:to_string() "years old, right?")

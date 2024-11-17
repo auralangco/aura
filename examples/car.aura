@@ -1,25 +1,16 @@
-type Category = suv | hatch | sedan | sport
+@derive:eq 
+type Category = @enum (suv, hatch, sedan, sport)
 
-type Car = ( name String, value Int, category Category) {
+type Car = (name String, value Int, category Category) {
     fn new(name String, value Int, category Category) -> Self = (name, value, category)
     
     fn adulterate (self, value Int) -> Self = (value = value, ...self)
     
-    matchfn is_suv(self) -> Bool {
+    @match fn is_suv(self) -> Bool {
         (_, _, Category.suv) => true
         _ => false
     }
  }
-
-tag Category #eq {
-    matchfn eq(self, other Self) -> Bool {
-        (Self.suv, Self.suv) => true,
-        (Self.hatch, Self.hatch) => true,
-        (Self.sedan, Self.sedan) => true,
-        (Self.sport, Self.sport) => true,
-        _ => false
-    }
-}
 
 tag Car #eq {
     fn eq(self, other Self) -> Bool =  self.name == other.name 

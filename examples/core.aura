@@ -1,27 +1,17 @@
-extern fn loop(init $T, do ($T) -> Flow($T, $U)) -> $U
+@extern("C") fn loop(T, U; from T, do (T) -> Control(T, U)) -> U
 
-fn match(value $T, do $T => $U) -> $U = do := value;
+fn match(T, U; value T, do T => U) -> U;
 
-fn cases(do Void => $T) -> $T = match(:null, do);
+fn cases(T; of Void => T) -> T = match(null, of);
 
-fn if(cond Bool, then () -> $T, else () -> $T) -> $T = match (cond) {
-    :true => then(),
-    :false => else()
+fn if(T; cond Bool, then () -> T = () -> { null }, else () -> T = () -> { null }) -> T = match (cond) {
+    true => then(),
+    false => else()
 };
 
-fn for(iter #iterable($T), do ($T) -> Flow(Void, $U)) -> ?$U = match (iter:current()) {
-    :some(value) => loop (value) {
-        value |> do |> Flow:map_next((_) -> iter:next())
-    },
-    :null => :null
-} 
-
-fn while(init $I, do $I -> Bool => Flow($I, $O), else () -> $O) -> $O {
-    fails = !(do !:= init);
-    
-    match (fails) {
-        :true => else()
-        :false => loop (init) { do := it } 
+fn foreach(T, U; of #iterable(T), do (T) -> Control(Void, Void)) -> {
+    loop (of:head()) do (item) -> {
+        (item ?> do) ?= break
     }
 }
 
@@ -29,11 +19,11 @@ test "Cases" {
     x = 5;
     y = 6;
 
-    z = cases {
-        : x > y => x * y,
-        : x < y => x + y,
-        else => 0 
+    z = cases of {
+        ~ x > y => x * y,
+        ~ x < y => x + y,
+        _ => 0 
     };
 
-    assert(5 == 6);
+    @assert (5 == 6);
 }

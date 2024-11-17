@@ -2,7 +2,7 @@ type Foo = (str String, i Int)
 type Bar = (foo Foo, f Float)
 type Baz = (b Bool, bar Bar)
 
-main = {
+main -> {
     baz Baz = (true, (("Hello World", 16), 3.14));
 
     baz=.bar(baz.bar.foo(("Bye", 61))); // (true, (("Bye", 61), 3.14))

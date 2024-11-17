@@ -1,8 +1,8 @@
-link {println} = aura/io
+import {println} = aura/io
 
-type Number = int Int | float Float
+type Number = @enum (int Int, float Float)
 
-main = act {
+@io:write main -> {
     n = Number:int(10);
 
     match (n) {

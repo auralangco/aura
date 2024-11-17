@@ -1,1 +1,1 @@
-main = println("Hello World")
+@io:write main = println("Hello World")
