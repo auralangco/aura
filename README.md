@@ -853,3 +853,11 @@ main -> {
 }
 
 ```
+
+# Brainstorm
+- Subtyping: `F64$m`
+- Atoms: `'atom` new syntax
+- Mutable types: `@mut` macro or `$mut` subtype
+- Extension members: `Int:(Int) -> Int`
+- Global objects: `obj`
+- Infix call: ``5 `add 6 == add(5, 6)``
