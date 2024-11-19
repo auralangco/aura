@@ -186,6 +186,7 @@ Time to increase your Aura arsenal with some types you you can play along
 - `Float`: floating point numbers that are 32-bits long like `3.1415`
 - `Char`: characters like `'a'`, `'~'`, `'ó'` 
 - `Bool`: `true` or `false` values
+- `Atom`: a self-representing type whose value is it's name like `'some-atom`, `'outer`
 - `String`: a sequence of chars like `"I love Aura"`
 - `List(T)`: a sequence of values of the same type
 
@@ -204,5 +205,7 @@ Also those types support some operators like:
 - `&&`, `||` logical AND and OR operators
 - `!` logical not operator
 - `++` concatenation (for strings and lists)
+
+We also talked about this `Atom` thing. Well, `Atom`s are pretty simple, they are self-representing values. So the value of the atom `'keyword` is `'keyword` and that's it. We'll show later some cool use cases for atoms. But keep in mind that an atom is only equals to itself. This concept of atom is highly inpired by Elixir/Erlang's atoms.
 
 Enough of basics, lets make something a little more fun like [handling input and output from the user](./003-io.md).
