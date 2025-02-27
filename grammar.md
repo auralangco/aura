@@ -2,30 +2,20 @@
 
 ## Keywords
 
-- `external`
-- `enum`
+- `xtrn`
+- `decl`
 - `final`
-- `import`
-- `main`
-- `fn`
-- `matchfn`
-- `loopfn`
-- `struct`
-- `tag`
-- `type`
-- `union`
-- `val`
 
 ## Identifiers
 
 - **value_identifier**: `[a-z][a-z0-9_]*`
 - **type_identifier**: `[A-Z][a-zA-Z0-9]*`
-- **tag_identifier**: `[a-z][a-z-]`
+- **macro_identifier**: `@[a-z][a-z0-9_]*`
 
 ## Literals
 
-- **integer**: `(0|[1-9][0-9]*)`
-- **sized_integer**: `(<integer>)((i|u)(8|16|32|64))?`
+- **integer**: `(-|+)?(0|[1-9][0-9]*)`
+- **sized_integer**: `(<integer>)((I|U)(8|16|32|64))?`
 - **float**: `(<integer>).(<integer>)`
 - **raw_char**: `([^'\]|\\(n|r|t|u[0-9]{4}))`
 - **char**: `'(<raw_char>)'`
@@ -33,19 +23,20 @@
 
 ## Operators
 
-- `=` bind
+- `=` mutate
+- `:=` declare
 - `+` add
 - `-` minus
 - `*` star
 - `/` divide
 - `%` modulus
 - `**` power
-- `=+` bind-add
-- `=-` bind-minus
-- `=*` bind-star
-- `=/` bind-divide
-- `=%` bind-modules
-- `=**` bind-power
+- `+=` bind-add
+- `-=` bind-minus
+- `*=` bind-star
+- `/=` bind-divide
+- `%=` bind-modules
+- `**=` bind-power
 - `&&` and
 - `&` bitwise and
 - `||` or
@@ -59,28 +50,26 @@
 - `>=` greater or equals to
 - `<=` less or equals to
 - `++` concatenate
-- `=++` bind concatenate
-- `_` curry
+- `++=` bind concatenate
+- `_` curry/don't care
 - `::` join
-- `=::` bind join
+- `::=` bind join
 - `\\` split
-- `=\\` bind split
+- `\\=` bind split
 - `.` property
-- `=.` bind property
+- `.=` bind property
 - `:` associated
-- `=:` bind associated
 - `...` spread
 - `->` function arrow
+- `~>` macro arrow
 - `=>` branch arrow
 - `~` guard
 - `|>` pipe
-- `$$` type assert
 - `??` unwrap
-- `?!` hard unwrap
-- `?=` unwrap or
-- `?.` safe property
-- `?:` safe associated
-- `?>` safe pipe
+- `!?` hard unwrap
+- `=?` unwrap or
+- `.?` safe property
+- `:?` safe associated
 
 ## Brackets
 
@@ -101,3 +90,4 @@
 - **branch**: `<type_expression> => <type_expression>`
 
 ## Value Expressions
+

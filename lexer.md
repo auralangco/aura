@@ -31,8 +31,8 @@ Formally:
 
 - `IDENT_VAL := "[a-z][a-z0-9_]+"`
 - `IDENT_TY := "[A-Z][a-zA-Z0-9]+"`
-- `IDENT_TAG := "#[a-z][a-z0-9]*(-[a-z0-9])*"`
-- `IDENT_MACRO := "@[a-z][a-z0-9:]*"`
+- `IDENT_TAG := "#[a-z][a-z0-9]*(-[a-z][a-z0-9])*"`
+- `IDENT_MACRO := "@([a-z][a-z0-9:]*)+"`
 - `IDENT_STY := "\$[a-zA-Z][a-zA-Z0-9]+"`
 
 ## Operators
@@ -57,8 +57,8 @@ Formally:
 - `OP_GTEQ := ">="`
 - `OP_LT := "<"`
 - `OP_LTEQ := "<="`
-- `OP_LSHF := "<<"`
-- `OP_RSHF := ">>"`
+- `OP_LTLT := "<<"`
+- `OP_GTGT := ">>"`
 - `OP_RARW := "->"`
 - `OP_FAT_RARW := "=>"`
 - `OP_TILDE := "~"`
@@ -67,6 +67,7 @@ Formally:
 - `OP_RANGE := "\.\."`
 - `OP_CRANGE := "\.\.="`
 - `OP_SPREAD := "\.\.\."`
+- `OP_DOLLAR_DOLLAR := "\$\$"`
 
 ## Delimiters
 
@@ -105,4 +106,4 @@ It's likely that several tokens are between each delimiter but they always have 
 - `PT_DOT := "."`
 - `PT_COMMA := ","`
 - `PT_COLON := ":"`
-- `PT_SCOLON := ";"`
+- `PT_SEMI := ";"`
