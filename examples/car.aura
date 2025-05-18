@@ -1,19 +1,17 @@
-@derive:eq 
-type Category = @enum (suv, hatch, sedan, sport)
+@derive:Eq 
+type Category @enum (suv, hatch, sedan, sport)
 
-type Car = (name String, value Int, category Category) {
-    fn new(name String, value Int, category Category) -> Self = (name, value, category)
+type Car (name String, value Int, category Category) {
+    func new(name String, value Int, category Category) -> Self = (name, value, category)
     
-    fn adulterate (self, value Int) -> Self = (value = value, ...self)
+    func adulterate (self, value Int) -> Self = (value = value, ...self)
     
-    @match fn is_suv(self) -> Bool {
+    @match func is_suv(self) -> Bool {
         (_, _, Category.suv) => true
         _ => false
     }
- }
 
-tag Car #eq {
-    fn eq(self, other Self) -> Bool =  self.name == other.name 
-                                    && self.value == other.value 
-                                    && self.category == other.category
+    func eq(self, other Self) -> Bool = self.name == other.name 
+                                        && self.value == other.value 
+                                        && self.category == other.category
 }

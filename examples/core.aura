@@ -1,19 +1,13 @@
-@extern("C") fn loop(T, U; from T, do (T) -> Control(T, U)) -> U
+@extern("C") func loop(T, U; from T, do (T) -> Control(T, U)) -> U
 
-fn match(T, U; value T, do T => U) -> U;
+func match[T, U](value T, do f (T) -> U) -> U := f(value)
 
-fn cases(T; of Void => T) -> T = match(null, of);
+func cases[T](of f () -> T) -> T := f()
 
-fn if(T; cond Bool, then () -> T = () -> { null }, else () -> T = () -> { null }) -> T = match (cond) {
+func if[T](cond Bool, then () -> T = () -> { null }, else () -> T = () -> { null }) -> T := match (cond) {
     true => then(),
     false => else()
 };
-
-fn foreach(T, U; of #iterable(T), do (T) -> Control(Void, Void)) -> {
-    loop (of:head()) do (item) -> {
-        (item ?> do) ?= break
-    }
-}
 
 test "Cases" {
     x = 5;

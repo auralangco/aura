@@ -21,14 +21,15 @@ What would a hello world program in Aura looks like?
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     println("Hello World"); //>> Hello World
 }
 ```
 
 Seems good right? Let's break it down for you:
 
-- `main`: the keyword that defines the entry point of the application
+- `func`: the keyword for function declarations
+- `main`: the symbol that defines the entry point of the application
 - `->`: the arrow operator used to define functions, since main takes no args and returns nothing those can be ommited
 - `{ }`: the definition of a scope, the function body
 - `println`: the function that prints a line (with a `\n` at the end)
@@ -40,17 +41,9 @@ Nice but this could be shorter. First of all, the last line in a scope doesn't n
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     println("Hello World") //>> Hello World
 }
-```
-
-Also, functions whose body is a single expression may drop the `{ }`
-
-```rs
-//! main.aura
-
-main -> println("Hello World") //>> Hello World
 ```
 
 ## Variables
@@ -60,7 +53,7 @@ What about creating variables in Aura? How it looks like?
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     message String := "Hello World";
     println(message) //>> Hello World
 }
@@ -78,7 +71,7 @@ This one could also be shorter since Aura has type inference. A really nice feat
 ```rs
 //! main.aura
 
-main -> {
+fn main -> {
     message := "Hello World";
     println(message) //>> Hello World
 }
@@ -86,13 +79,13 @@ main -> {
 
 ## Mutating Variables
 
-Well, Aura variables are not that variable, we'll discuss more about this when we talk about [mutations](./xxx-mutations.md) but as of now, just remember that variables are immutable by default and to make them mutable you need to add `$mut` to the variable type or prepend the value with `@mut`
+Well, Aura variables are not that variable, we'll discuss more about this when we talk about [mutations](./xxx-mutations.md) but as of now, just remember that variables are immutable by default and to make them mutable using `@mut`
 
 ```rs
 //! main.aura
 
-main -> {
-    message String$mut := @mut "Hello World";
+func main -> {
+    message @mut String := @mut "Hello World";
     message = "World Hello";
     println(message) //>> World Hello
 }
@@ -100,19 +93,19 @@ main -> {
 
 Let's break it down for you once again
 
-- `String$mut`: it says that this particular string may suffer from mutations, the consequences will be cleared later
+- `@mut String`: it says that this particular string may suffer from mutations, the consequences will be cleared later
 - `@mut "Hello World`: this transforms this string into a mutable string
 - `=`: the mutation operator that lets you change the value of a variable
 - `"World Hello"`: notice that we don't need to use `@mut` since it's clear that this value must be mutable
 
-Keep in mind that you don't need to use both `$mut` subtype and `@mut` macro so
+Keep in mind that you don't need to use `@mut` on both
 
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     // Those are the same
-    message String$mut := "Hello World";
+    message @mut String := "Hello World";
     message := @mut "Hello World";
     
     // But not this one
@@ -129,7 +122,7 @@ The above code is not just an example, it's working Aura code, you might redefin
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     x := 100; // x is an Int
     println(x); //>> 100
 
@@ -147,14 +140,14 @@ Now you don't need to invent several names for your temporary variables (and in 
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     x := 100; // x is 100
     println(x); //>> 100
 
-    { // Remember the scope markers?
+    ( // Remember the scope markers?
         x := 5; // Inside this scope x becomes 5
         println(x); //>> 5
-    }
+    )
     
     // Here it's 100 once again
     println(x); //>> 100
@@ -168,13 +161,13 @@ This one is pretty straightforward. Scopes are local regions of your code whose 
 ```rs
 //! main.aura
 
-main -> {
-    x := {
+func main -> {
+    x := (
         a := 10;
         b := 12;
 
         a + b // The last expression in a scope is it's return value
-    }
+    )
 }
 ```
 
@@ -192,8 +185,8 @@ Time to increase your Aura arsenal with some types you you can play along
 
 Well we kinda introduced you to something completly new that are lists, we'll talk more about them later. We need to discuss more on numeric types in Aura. There isn't only `Int` and `Float`:
 
-- `I8`, `I16`, `I32`, `I64`: integer numbers from 8 to 64 bits
-- `U8`, `U16`, `U32`, `U64` and `UInt`: natural numbers from 8 to 64 bits (`UInt` is 32 bits long)
+- `I8`, `I16`, `I32`, `I64`, `Int` and `ISize`: integer numbers from 8 to 64 bits (`Int` is 32 bits long, and `ISize` is platform specific)
+- `U8`, `U16`, `U32`, `U64`, `UInt` and `USize`: natural numbers from 8 to 64 bits (`UInt` is 32 bits long, and `USize` is platform specific)
 - `F32`, `F64`: 32 and 64 bits long floating point numbers
 
 Also those types support some operators like: 
@@ -204,7 +197,8 @@ Also those types support some operators like:
 - `<`, `>`, `<=`, `>=` comparison operators
 - `&&`, `||` logical AND and OR operators
 - `!` logical not operator
-- `++` concatenation (for strings and lists)
+- `++` concatenation (for collections)
+- `--` difference (for collections)
 
 We also talked about this `Atom` thing. Well, `Atom`s are pretty simple, they are self-representing values. So the value of the atom `'keyword` is `'keyword` and that's it. We'll show later some cool use cases for atoms. But keep in mind that an atom is only equals to itself. This concept of atom is highly inpired by Elixir/Erlang's atoms.
 

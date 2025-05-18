@@ -2,9 +2,9 @@
 
 ## Keywords
 
-- `xtrn`
-- `decl`
-- `final`
+- `type`
+- `func`
+- `decl`	
 
 ## Identifiers
 
@@ -14,12 +14,13 @@
 
 ## Literals
 
-- **integer**: `(-|+)?(0|[1-9][0-9]*)`
-- **sized_integer**: `(<integer>)((I|U)(8|16|32|64))?`
-- **float**: `(<integer>).(<integer>)`
+- **natural**: `(0|[1-9][0-9]*)`
+- **integer**: `(-|+)?<natural>`
+- **sized_integer**: `<integer>((I|U)(8|16|32|64))?`
+- **float**: `<integer>?.<natural>?`
 - **raw_char**: `([^'\]|\\(n|r|t|u[0-9]{4}))`
-- **char**: `'(<raw_char>)'`
-- **string** `"(<raw_char>)*"`
+- **char**: `'<raw_char>'`
+- **string** `"<raw_char>*"`
 
 ## Operators
 
@@ -80,14 +81,21 @@
 ## Type Expressions
 
 - **simple**: `<type_identifier>`
-- **parametric**: `<type_identifier>((<type_expression>)(,(<type_expression>))*,?)`
-- **unit**: `()`
-- **compound**: `((<type_expression>)(,(<type_expression>))*,?)`
-- **struct**: `struct ((<value_identifier> <type_expression>)(,(<value_identifier> <type_expression>))*,?)`
-- **union**: `union ((<type_expression>)(,(<type_expression>))*,?)`
-- **enum**: `enum ((<value_identifier> <type_expression>?)(,(<value_identifier> <type_expression>?))*,?)`
-- **function**: `((<value_identifier> <type_expression>)(,(<value_identifier> <type_expression>))*,?) -> <type_expression>`
-- **branch**: `<type_expression> => <type_expression>`
+- **parametric**: `\[<type_expression>(,<type_expression>)*,?\]<type_expression>`
+- **unit**: `\(\)`
+- **tuple**: `\(<type_expression>(,<type_expression>)*\)`
+- **struct**: `\((<value_identifier> <type_expression>)(,(<value_identifier> <type_expression>))*,?\)`
+- **function**: `(<tuple>|<struct>) -> <type_expression>`
+- **associated_type**: `<type_expression>:<type_identifier>`
 
 ## Value Expressions
 
+- **variable**: `<value_identifier>`
+- **literal**: `<integer>|<float>|<char>|<string>`
+- **call**: `(<value_identifier>|<type_expression>|<associated_value>|<field>)(<value_expression>(,<value_expression>)*)`
+- **index**: `<value_expression>\[<value_expression>\]`
+- **slice**: `<value_expression>[<range>]`
+- **field**: `(<value_expression>|<type_expression>).<value_identifier>`
+- **associated_value**: `<value_expression>:<value_identifier>`
+- **range**: `<natural>?..<natural>?`
+- **compound**:

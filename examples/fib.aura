@@ -1,4 +1,4 @@
-@loop fn fib(n Int, current Int, following Int) -> Int {
+@loop func fib(n Int, current Int, following Int) -> Int {
     if (n == 0) then {
         break(current)
     } else {
@@ -6,4 +6,6 @@
     }
 }
 
-@io:write main = println(fib(10, 0, 1))
+func main -> {
+    println(fib(10, 0, 1))
+}

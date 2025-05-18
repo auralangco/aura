@@ -7,15 +7,15 @@ In Aura we have some different ways to call functions and we'll go through all o
 To this point we have used two functions `println` and `readln`, they're pretty simple and they are declared as so:
 
 ```rs
-fn println(message #printable) -> { ... }
+fn println(message Printable) -> { ... }
 
 fn readln() -> Result(String, IOError) { ... }
 ```
 
-So `println` takes a type that is tagged as `#printable` and returns nothing. While `readln` takes nothing and return a `Result(String, IOError)`. Don't you bother with much other syntax, we'll cover them next. To call those functions just use the name and then a set of parenthesis with the arguments in a comma separated list within it.
+So `println` takes a type that implements the `Printable` interface and returns nothing. While `readln` takes nothing and return a `Result(String, IOError)`. Don't you bother with much other syntax, we'll cover them next. To call those functions just use the name and then a set of parenthesis with the arguments in a comma separated list within it.
 
 ```rs
-main -> {
+fn main -> {
     // Echoes back whatever is typed in by the user
     println(readln()?!);
 }
@@ -26,7 +26,7 @@ main -> {
 Methods are just functions that are tied to a type and we have lot's of them. To call a method use `:` after some value, then the method name and a set of parenthesis with the arguments for the method being called.
 
 ```rs
-main -> {
+fn main -> {
     x Int := 100;
 
     x:is_odd(); // -> Bool
@@ -56,7 +56,7 @@ main -> {
 A method can also be called on the type rather than on the value, and later passing the value as an argument
 
 ```rs
-main -> {
+fn main -> {
     x Int := 100;
 
     Int:is_odd(x); // -> Bool
@@ -102,7 +102,7 @@ Some of the control flow stuff we showed earlier are methods.
 So we can do stuff like:
 
 ```rs
-main -> {
+fn main -> {
     [1, 2, 3]:foreach do (i) -> {
         println(i);
     }
@@ -120,7 +120,7 @@ fn to(L, R; left L, right R) -> (L, R) = (left, right)
 Again the declaration syntax will be cleared next, but the important is, it takes two arguments (the static arguments doesn't matter for this case) and returns a tuple with the two given arguments.
 
 ```rs
-main -> {
+fn main -> {
     element := to("height", 1.8);
     element := "height" `to 1.8; // Use the backtick notation to indicate this is an infix call to a function
     element := "height" `to(String, Float) 1.8; // You might pass the static args this way
@@ -130,7 +130,7 @@ main -> {
 
 ## Operators
 
-Almost all operators we showed you all are tied to a function/method so they can be overloaded. Most of them are methods bound to a tag so to implement it to your type you'll need to tag it with the appropriate tag. Like the `-` operator uses the `minus` method of the `#minus` tag. We'll show this better when talking about tags
+Almost all operators we showed you all are tied to a function/method so they can be overloaded. Most of them are methods bound to an interface so to implement it to your type you'll need to implement the appropriate interface. Like the `-` operator uses the `minus` method of the `Minus` interface. We'll show this better when talking about interfaces.
 
 ## Labelled Calls
 
@@ -139,7 +139,7 @@ This is one of Aura's features we are most proud of, please pay attention to the
 If can be understood as the function
 
 ```rs
-fn if(T; cond #truthy, then 'fn:() -> T = () -> { NaV.nav }, else 'fn:() -> T = () -> { NaV.nav } ) -> T
+fn if(T; cond Truthy, then 'fn:() -> T = () -> { NaV.nav }, else 'fn:() -> T = () -> { NaV.nav } ) -> T
 ```
 
-It means: `if` is a function that has a static type parameter `T`, a condition that is `#truthy`, two functions that takes no arguments, returns `T` and by default returns `NaV` and are bound to the scope of the calling function called `then` and `else`.
+It means: `if` is a function that has a static type parameter `T`, a condition that is `Truthy`, two functions that takes no arguments, returns `T` and by default returns `NaV` and are bound to the scope of the calling function called `then` and `else`.

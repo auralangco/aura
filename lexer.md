@@ -75,7 +75,7 @@ There are only 4 delimiters is Aura syntax:
 
 - `( )` parameters delimiter
 - `[ ]` listing delimiter
-- `{ }` scope delimiter
+- `{ }` function delimiter
 
 Namely:
 

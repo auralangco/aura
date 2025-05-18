@@ -7,7 +7,7 @@ What would a program be if we couldn't make decisions and run different pieces o
 Aura's `if` is just a bit different from what you might be used to
 
 ```rs
-main -> {
+func main -> {
     input Result(_, _) := readln();
 
     if (input) then {
@@ -20,14 +20,14 @@ main -> {
 
 First notice the `Result(_, _)` syntax, the `_` operator is saying: "Come on type inference, you got this, right?". It's a place holder that can be used when you don't want to write down the full type. But we have this pretty cool `if` syntax:
 
-- `(input)`: the if condition. A value of a type that is `#truthy`. For a `Result` it's `true` once it's `succ`
+- `(input)`: the if condition. A value of a type that is `Truthy`. For a `Result` it's `true` once it's `succ`
 - `then`: the expression to be evaluated once the condition is `true`
 - `else`: the expression to be evaluated once the condition is `false`
 
 Notice that `if` can be used as an expression, it will return the value from the `then` or `else` argument depending on the condition.
 
 ```rs
-main -> {
+func main -> {
     x := if (5 > 6) then { "Craziness" } else { "Alright" };
 
     println(x); //>> Alright
@@ -37,9 +37,21 @@ main -> {
 Also, `then` and `else` have default values so you might use `if` with only one branch (or even neither). In that case `if` cannot be used as an expression since it will return a `NaV` (not a value) that can't be use as a value.
 
 ```rs
-main -> {
+func main -> {
     if (1 == 1) then { println("This is working") };
     if (1 == 2) else { println("This is also working") };
+}
+```
+
+Notice that for `then` and `else` be recognized as named arguments, you need them to be in the same line as previous the enclosing brace (`)`, `]` or `}`).
+
+
+```rs
+func main -> {
+    // This won't work
+    if (1 == 1) 
+    then { println("This is working") }
+    else { println("This is also working") }
 }
 ```
 
@@ -50,13 +62,13 @@ If you need more branches then you might want to use:
 It is like `if` but for more branches
 
 ```rs
-main -> {
+func main -> {
     input := readln()?!;
 
     case of {
         ~ input:contains("Aura") => println("Yay! Aura mentioned!"),
         ~ input:length() < 2 => println("Too short"),
-        => println("The input is " ++ input)
+        => println("The input is: " ++ input)
     }
 }
 ```
@@ -68,26 +80,26 @@ Hmmmm ok, this syntax is something really different, but don't you worry, I got 
 
 Let us describe this matching expression a bit better.
 
-In Aura, pattern matching structures can be described as a value. A matching expression is built with branches, each branch has 3 parts `pattern ~ guard => expr`:
+In Aura, pattern matching structures can be described as a value (in fact, this is just an anonymous function). A matching expression is built with branches, each branch has 3 parts `pattern ~ guard => expr`:
 
 - pattern: the base of a pattern matching, it describes a pattern of how a value is structured (we'll talk about it soon)
-- guard: a `#truthy` expression. The branch only matches if both the pattern and the guard matches
+- guard: a `Truthy` expression. The branch only matches if both the pattern and the guard matches. The guard is optional.
 - expr: what will be evaluated once the branch matches
 
 Only one branch matches per time and in `case` the pattern is always empty
 
 ## `match`
 
-This function unlocks the full potential of Aura pattern matching system. You already know the matching expressions: a comma separated list of branches `pattern ~ guard => expr` surrounded by `{ }`. Let's break them down.
+This function unlocks the full potential of Aura pattern matching system. You already know the matching function expressions: a comma separated list of branches `pattern ~ guard => expr` surrounded by `{ }`. Let's break them down.
 
-- `expr`: you might use literally any expression here, it will be evalutated once the branch matches. Keep in mind the expression of every branch must have the same type otherwise the matching expression will return a `NaV`
-- `guard`: is an expression that evaluates to a `#truthy` value, it will only be evaluated when the pattern matches and it will determine if the branch matches or not
+- `expr`: you might use literally any expression here, it will be evalutated once the branch matches. Keep in mind the expression of every branch must have the same type otherwise the matching function will return a `NaV`
+- `guard`: is an expression that evaluates to a `Truthy` value, it will only be evaluated when the pattern matches and it will determine if the branch matches or not. The guard is optional.
 - `pattern`: the heart of the branch, it verifies the form of the values being matched to
 
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     x := 8
     match (x) do {
         1 => println("It's 1"),
@@ -109,22 +121,39 @@ Let's break this down for you
 - `y ~ y:is_even() => println("It's " ++ y ++ ", an even number")`: a branch which pattern matches any value, but the guard will check if it's an even number. Notice that the variable `y` can be used in the expression, this is called a capture.
 - `=> println("It's an odd number")`: a branch that always matches
 
+In fact, `match` is just syntactic sugar for a function call to a function that takes a value and a function that takes a value and returns a value.
+
+```rs
+func main -> {
+    x := 8
+
+    // This is the same as the match above
+    {
+        1 => println("It's 1"),
+        2..=7 => println("It's between 2 and 6"),
+        8 => println("Yay! It's 8"),
+        y ~ y:is_even() => println("It's " ++ y ++ ", an even number"),
+        => println("It's an odd number") 
+    }(x)
+}
+```
+
 ### Patterns
 
 As we go on with this you will learn how to pattern match against more values, but let start with the basics:
 
 - `_`: matches all values but won't capture it
 - variable: also matches all, but captures the value to the specified name
-- *empty*: an empty pattern works the similar as `_`, but `_` can be used in more spots
+- *empty*: an empty pattern works similar to `_`, but `_` can be used in more spots
 - literals: can be used for: integers, floats, bool, chars, strings, lists and atoms
 - ranges: can be used for: integers, floats and chars
 
-#### Lists Patterns
+#### List Patterns
 
 We have some special syntax for matching against lists
 
 ```rs
-main -> {
+decl main -> {
     x := [1, 2, 3, 4, 5]
     
     match (x) do {
@@ -153,7 +182,7 @@ Whoa, lot's of patterns
 
 Notice that we are pattern matching on individual elements of the list so we could use any integer pattern not only integer literals. Also if you're confused, the above program would print only `A list with init [1, 2, 3, 4] ending with 5` since it's the first pattern that matches.
 
-The `...` operator is called the *spread* operator it's used to insert values from a list into another. But in this case it's being used to capture sublists of a list. Notice both `init`, `tail`, `body` would be of type `List(Int)` even if they match only a single element.
+The `...` operator is called a *spread* operator it's used to insert values from a list into another. But in this case it's being used to capture sublists of a list. Notice both `init`, `tail`, `body` would be of type `List(Int)` even if they match only a single element.
 
 #### Destructuring Patterns
 
@@ -164,7 +193,7 @@ The pattern used by lists is called a destructuring pattern and have similars fo
 This looping structure iterates over values and executes some action for each (lol) of them
 
 ```rs
-main -> {
+func main -> {
     list := [0, 1, 2, 4, 5];
 
     foreach (list) do (i) -> {
@@ -187,7 +216,7 @@ No type annotations are needed because of type inference
 Differently from most languages, Aura has no `while` loop since it's based on mutations and we try to avoid them. Instead we use the beautiful and immutable `loop`
 
 ```rs
-main -> {
+func main -> {
     initial := 9;
 
     // Collatz conjecture
@@ -215,14 +244,14 @@ Similarly to `Result(T, E)`, we have `Control(B, C)` that also has two variants 
 We could also count (immutably) how many iterations we have done before finishing the loop
 
 ```rs
-main -> {
+func main -> {
     initial := 9;
 
     // Collatz conjecture
     iters := loop ((initial, 0)) do ((value, count)) -> {
         case of {
             ~ value == 1 => @break count,
-            ~ value:is_even() => @continue (value/2, count + 1),
+            ~ value % 2 == 0 => @continue (value/2, count + 1),
             => @continue ((value + 3) * 4, count + 1)
         }
     }
@@ -237,6 +266,6 @@ Okay lets see what changed
 - `@break count`: when breaking from the loop we will return the current iteration count
 - `@continue (value/2, count + 1)`: for the next iteration we now must specify both the value and the next counter (just incrementing the current one)
 
-That's it! We have loops in a way we don't need to use any dirty mutations. Actually 'til this point we didn't need to use `@mut` or `$mut` for anything and that's beautiful.
+That's it! We have loops in a way we don't need to use any dirty mutations. Actually 'til this point we didn't need to use `@mut` for anything and that's beautiful.
 
 Next up, time to [create functions](./005-functions.md)

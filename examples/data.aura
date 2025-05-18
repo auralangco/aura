@@ -5,8 +5,8 @@ type Number = @enum (int Int, float Float)
 @io:write main -> {
     n = Number:int(10);
 
-    match (n) {
+    match (n) do {
         int(i) => println(`Integer ${i}`),
-        float(f) => println(`Float ${f}`);
+        float(f) => println(`Float ${f}`)
     }
 }

@@ -1,1 +1,3 @@
-@io:write main = println("Hello World")
+func main -> {
+    println("Hello World")
+}

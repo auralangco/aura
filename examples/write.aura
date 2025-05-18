@@ -1,6 +1,6 @@
 import (File, IOError) = aura/io
 
-@fs @io:write main = {
+func main -> {
     // Tries to open the file `README.md` in write mode
     file Result(File, IOError) = File:open("./README.md", File:Mode.write);
     

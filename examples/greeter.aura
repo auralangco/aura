@@ -1,4 +1,4 @@
-@io main -> {
+func main -> {
     name = {
         println("What is your name? ");
         // Read a line from the stdin and crashes if an error happens
@@ -11,5 +11,5 @@
         readln()?! |> Int:parse |> Result:unwrap
     };
 
-    println("Hello, " ++ name ++ "! You're" age:to_string() "years old, right?")
+    println("Hello, " ++ name ++ "! You're" ++ age:to_string() ++ "years old, right?")
 }

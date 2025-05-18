@@ -1,9 +1,9 @@
 # Declaring Functions
 
-We use the `fn` keyword to declare a function. A simple function declaration is as follows:
+We use the `decl` keyword to declare a function. A simple function declaration is as follows:
 
 ```rs
-fn my_function(arg1 Int, arg2 Float, arg3 String) -> Bool {
+func my_function(arg1 Int, arg2 Float, arg3 String) -> Bool {
     // Body
 }
 ```
@@ -12,13 +12,15 @@ But that's not all, just like the `main` we can remove the `{}` if its body is j
 
 ```rs
 // `:=` operator needed since we have a type other than Void
-fn sum(a Int, b Int) -> Int := a + b
+func sum(a Int, b Int) -> Int := a + b
 ```
 
 If the function has no return we might omit it
 
 ```rs
-fn print_sum(a Int, b Int) -> println(a + b)
+func print_sum(a Int, b Int) -> {
+    println(a + b)
+}
 ```
 
 Notice that no semicolon is needed at the end of a function declaration since it's a top level declaration.
@@ -26,7 +28,7 @@ Notice that no semicolon is needed at the end of a function declaration since it
 To call a function just pass the name and the arguments in a comma separated list
 
 ```rs
-main -> {
+func main -> {
     print_sum(1, 7); //>> 8
 }
 ```
@@ -42,7 +44,7 @@ Before the list of parameters, a function might ask for static parameters, ie, a
 at compile-time. Any literal value can be used, values subtyped as `$static` as well and also types. 
 
 ```rs
-fn build_array(T, len USize$static; elem T) -> Array(T, len) := [len; elem]
+func build_array(T, len USize$static; elem T) -> Array(T, len) := [len; elem]
 ```
 
 Again, the static parameters also are part of the function type, so the type of `build_array` is `(T, len USize$static; elem T) -> Array(T, len)`
@@ -55,7 +57,7 @@ Since functions can be used as a value, closures are a way of instantiate functi
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     name := "Aura";
 
     closure () -> Void := () -> { println(name) };
@@ -75,7 +77,7 @@ of reference to the variable `name` declared in the `main` body. What happens it
 ```rs
 //! main.aura
 
-main -> {
+func main -> {
     name := "Aura";
 
     closure () -> Void := () -> { println(name) };
@@ -125,13 +127,13 @@ Since functions are values we can return them from other functions
 ```rs
 //!main.aura
 
-fn myfunc() -> () -> String {
+func myfunc() -> () -> String {
     name := "MyFunc"
 
     () -> { name }
 }
 
-main -> {
+func main -> {
     cb := myfunc()
     println(cb()); //>> MyFunc 
 }
@@ -140,7 +142,7 @@ main -> {
 If you want to call a function that is an expression (say the return value from another function) you might add an extra set of parenthesis
 
 ```rs
-main -> {
+func main -> {
     (myfunc())();
 }
 ```
@@ -152,7 +154,7 @@ Or use the pipe operator
 Remember we said that temporary variables might not be even needed? Well we were talking about `|>`, the pipe operator. It's similar to Elixir/F# pipe operator. On the left side goes the arguments on the right side, the function to be called.
 
 ```rs
-main -> {
+func main -> {
     x Int := ("100", "0") |> String:replace |> String:parse |> Result:unwrap;
 }
 ```
@@ -162,7 +164,7 @@ The above takes the tuple `("100", "0")` calls replace on `"100"`, returning `"1
 This is a core feature for functional programming so you can actually see your program as a transformation of values instead of a sequence of steps
 
 ```rs
-main -> {
+func main -> {
     // You might also write it this way
     x Int := ("100", "0") 
         |> String:replace 
@@ -174,7 +176,7 @@ main -> {
 We could event print it without ever binding it to a variable;
 
 ```rs
-main -> {
+func main -> {
     ("100", "0") 
         |> String:replace 
         |> String:parse(Int;) // Type annotations needed 
@@ -188,7 +190,7 @@ main -> {
 When declaring a function, one might add an extra identifier to a parameter it, this is useful to create an external name for a parameter.
 
 ```rs
-fn map(n1 Int, n2 Int, with f (Int, Int) -> Int) -> Int := f(n1, n2)
+func map(n1 Int, n2 Int, with f (Int, Int) -> Int) -> Int := f(n1, n2)
 ```
 
 If no extra identifier is provided, you're still able to refer to the parameter by the name. The extra `with` identifier is 
@@ -197,7 +199,7 @@ how callers to this function will refer to the `f` parameter.
 So when calling `map` we might use:
 
 ```rs
-main -> {
+func main -> {
     // Regular call
     map(1, 2, sum);
     // Calling with the labels name
@@ -212,9 +214,9 @@ main -> {
 If the arguments for your function are: functions, lists or matching expressions you might pass outside of the parenthesis identifying them by their label
 
 ```rs
-fn each(T; of collection List(T), do f (T) -> Void) -> ...
+func each(T; of collection List(T), do f (T) -> Void) -> ...
 
-main -> {
+func main -> {
     // We already know this syntax, right?
     each ([1, 2, 3]) do (i) -> {
         println(i)
@@ -229,7 +231,7 @@ main -> {
 If the function used as an argument does not take any input the `->` might be ommited
 
 ```rs
-main -> {
+func main -> {
     if(true) then -> { println("True") } else -> { println("What???") }
     if(true) then { println("True") } else { println("What???") }
 }
@@ -237,25 +239,25 @@ main -> {
 
 ## Default Parameters
 
-The later parameters in a function may receive a default value that must be a `$static` value
+The later parameters in a function may receive a default value that must be a static value
 
 ```rs
-fn increment(n Int, by value Int = 1) -> Int := n + value
+func increment(n Int, by value Int = 1) -> Int := n + value
 ```
 
 Only the later parameters may be defaulted, so when calling, the non-default parameters come first and the later
  might be specified by name
 
  ```rs
-fn some_function(a Int, b Int = 8, arg c Float = 2.5, last d String = "default") ...
+func some_function(a Int, b Int = 8, arg c Float = 2.5, last d String = "default") ...
 
-main -> {
+func main -> {
     some_function(1); // Alright all the remainders have default values
     some_function(4, 0, last = "another value"); // We might define the values for defaulted params in order and then by label
 }
  ```
 
-## Scoped Closures
+## Inlined Closures
 
 A closure might be bound to the scope it were created. This is useful for macros that change the control flow of the code. Lets first understand what are those macros
 
@@ -275,8 +277,8 @@ We have 4 special scope names said `'fn`, `'loop`, `'local` and `'static`. The b
 all scopes are implicitly named `'local` unless other specified and `'static` refeers to the global scope.
 
 ```rs
-main -> {
-        
+func main -> {
+    // This is a scoped closure
 }
 ```
 
